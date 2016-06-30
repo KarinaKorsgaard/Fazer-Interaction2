@@ -18,6 +18,8 @@ class CustomParticle : public ofxBox2dCircle {
 public:
     int age=0;
     float radius;
+    int num;
+    ofVec2f attractionPoint;
     CustomParticle() {
         radius = getRadius();
     }
@@ -26,31 +28,40 @@ public:
         ofVec2f vel= getVelocity();
         ofVec2f p= getPosition();
       //  addAttractionPoint(RES_W/2,RES_H/2,2);
-        if(getPosition().x>RES_W){
-            addAttractionPoint(RES_W/2,RES_H/2,2);
+        if(getPosition().x>(num+1)*(RES_W/4)){
+            addAttractionPoint(attractionPoint,3);
+           // addAttractionPoint(RES_W/2,RES_H/2,2);
 //            setVelocity(vel);
 //            setPosition(RES_W,p.y);
         }
         if(getPosition().y>RES_H){
-            addAttractionPoint(RES_W/2,RES_H/2,2);
+            addAttractionPoint(attractionPoint,3);
+            // addAttractionPoint(RES_W/2,RES_H/2,2);
 //            setVelocity(vel);
 //            setPosition(p.x,RES_H);
         }
         
-        if(getPosition().x<0){
-            addAttractionPoint(RES_W/2,RES_H/2,2);
+        if(getPosition().x<num*(RES_W/4)){
+            addAttractionPoint(attractionPoint,3);
+            // addAttractionPoint(RES_W/2,RES_H/2,2);
 //            setVelocity(vel);
 //            setPosition(0,p.y);
         }
         if(getPosition().y<0){
-            addAttractionPoint(RES_W/2,RES_H/2,2);
+            addAttractionPoint(attractionPoint,3);
+            // addAttractionPoint(RES_W/2,RES_H/2,2);
 //            setVelocity(vel);
 //            setPosition(p.x,0);
         }
-        
+       // addAttractionPoint(attractionPoint,0.5);
         if(vel.length()<1)setVelocity(vel*2);
         if(vel.length()>5)setVelocity(vel*0.8);
     }
+};
+
+class soundParticle{
+    public:
+
 };
 
 class ofApp : public ofBaseApp{
@@ -99,7 +110,8 @@ class ofApp : public ofBaseApp{
     
     ofParameter<float>sNear, sFar;
     // POINTS IN BLOBS!
-    vector <ofPoint> attractPoints;
+    vector<vector<ofPoint>> attractPoints;
+    
     
     // swarming Particles
     vector <swarmParticle> swarmParticles;
@@ -110,6 +122,10 @@ class ofApp : public ofBaseApp{
     binnedSystem backgroundCluster;
     vector<ofImage>theTrees;
     
+    vector<vector<ofVec2f>> soundGrid;
+    vector<vector<bool>> soundToggle;
+    vector<vector<int>> soundAge;
+    ofxOscSender soundSender;
     
     ofFbo pointSplineFbo;
     ofTexture sparkImg;

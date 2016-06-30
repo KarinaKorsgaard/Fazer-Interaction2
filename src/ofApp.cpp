@@ -142,7 +142,7 @@ void ofApp::setup(){
         int cIndx = 0;
         swarmParticles.assign(num, swarmParticle());
         for(unsigned int i = 0; i < swarmParticles.size(); i++){
-            swarmParticles[i].setAttractPoints(&attractPoints);
+           // swarmParticles[i].setAttractPoints(&attractPoints);
             //        swarmParticles[i].sNear = &sNear;
             //        swarmParticles[i].sFar = &sFar;
             swarmParticles[i].reset();
@@ -159,21 +159,26 @@ void ofApp::setup(){
         int num = SWARM_NUM;
         ofMesh colorMesh;
         int cIndx = 0;
-        swarmParticles.assign(num, swarmParticle());
-        for(unsigned int i = 0; i < swarmParticles.size(); i++){
+       // swarmParticles.assign(num, swarmParticle());
+        int fours = 0;
+        
+        for(unsigned int i = 0; i < num; i++){
+            fours = (i*4) / num;
+            
             
             customParticles.push_back(shared_ptr<CustomParticle>(new CustomParticle));
             CustomParticle * p = customParticles.back().get();
             float r = ofRandom(5, 35);		// a random radius 4px - 20px
             //float density, float bounce, float friction
             p->setPhysics(ofRandom(0.1,10), ofRandom(0.1,1.2) ,ofRandom(0.1,3));
-            p->setup(box2d.getWorld(), ofRandom(0,RES_W), ofRandom(100,RES_H-100), r);
+            p->setup(box2d.getWorld(), ofRandom((fours-1)*RES_W/4,fours*RES_W/4), ofRandom(100,RES_H-100), r);
             p->radius=p->getRadius();
             p->setVelocity(ofRandom(-0.5,0.5), ofRandom(-0.5,0.5));
-            
+            p->attractionPoint = ofVec2f(fours*RES_W/4 +RES_W/8, RES_H/2);
+            p->num =fours;
             pointSizes.push_back(r);
             
-            colorMesh.addVertex(ofVec3f(fazerColors[cIndx].r,fazerColors[cIndx].g,fazerColors[cIndx].b));
+            colorMesh.addVertex(ofVec3f(fazerColors[fours].r,fazerColors[fours].g,fazerColors[fours].b));
             cIndx = i%fazerColors.size();
             
         }
@@ -202,7 +207,7 @@ void ofApp::setup(){
         binnedSystem b;
         clusters.push_back(b);
         clusters.back().setup(ofVec2f((RES_W/(CLUSTER_NUM+1))*(i+1),ofRandom(100, RES_H-100)),num, size);
-        clusters.back().attractPoints = &attractPoints;
+        //clusters.back().attractPoints = &attractPoints;
         //clusters.back().tree = &theTrees[int(ofRandom(theTrees.size()))];
         for(int u = 0; u< num;u++){
             colorMesh.addVertex(ofVec3f(fazerColors[cIndx].r,fazerColors[cIndx].g,fazerColors[cIndx].b));
@@ -213,10 +218,23 @@ void ofApp::setup(){
         clusters.back().vbo.setNormalData(&colorMesh.getVertices()[0], (int)num, GL_STATIC_DRAW);
     }
    
-    
-    
+    soundGrid.resize(13);
+    soundToggle.resize(13);
+    soundAge.resize(13);
+    int stepX = RES_W/soundGrid.size();
+    int stepY = RES_H/3;
+    for(int i = 0 ; i< soundGrid.size() ; i++){
+        
+        for(int u = 0; u<3;u++){
+            bool b = false;
+            soundGrid[i].push_back(ofVec2f(i*stepX + 50, u*stepY+50));
+            soundToggle[i].push_back(b);
+            soundAge[i].push_back(10);
+        }
+    }
+    soundSender.setup("localhost",3000);
     drawGui = true;
-
+    attractPoints.resize(4);
     syphon.setName("FazerParticles");
 }
 
@@ -271,27 +289,28 @@ void ofApp::update(){
         }
     }
     
-    //add random blob
-//    if(bDebug){
-//        blobs[0][0].clear();
-//        //testPoly
-//        ofPolyline line;
-//        float i = 0;
-//        while (i < TWO_PI ) { // make a heart
-//            float r = (2-2*sin(i) + sin(i)*sqrt(abs(cos(i))) / (sin(i)+1.4)) * -80;
-//            float x = ofGetWidth()/2 + cos(i) * r;
-//            float y = ofGetHeight()/2 + sin(i) * r;
-//            line.addVertex(ofVec2f(x+offSet1X,y+offSet1Y));
-//            i+=0.005*HALF_PI*0.5;
-//        }
-//        
-//        line.close(); // close the shape
-//        
-//        blobs[0][0]=line;
-//    }
+    
+   // add random blob
+    if(bDebug){
+        blobs[0][0].clear();
+        //testPoly
+        ofPolyline line;
+        float i = 0;
+        while (i < TWO_PI ) { // make a heart
+            float r = (2-2*sin(i) + sin(i)*sqrt(abs(cos(i))) / (sin(i)+1.4)) * -80;
+            float x = ofGetWidth()/2 + cos(i) * r;
+            float y = ofGetHeight()/2 + sin(i) * r;
+            line.addVertex(ofVec2f(x+offSet1X,y+offSet1Y));
+            i+=0.005*HALF_PI*0.5;
+        }
+        
+        line.close(); // close the shape
+        
+        blobs[0][0]=line;
+    }
 
 
-    attractPoints.clear();
+    for(int i = 0; i<attractPoints.size();i++ )attractPoints[i].clear();
     
     centroids.clear();
     
@@ -305,9 +324,9 @@ void ofApp::update(){
             numBlobs++;
             if(p.size()>0){
                 centroids.push_back(p.getCentroid2D());
-                attractPoints.push_back(p.getCentroid2D());
+                attractPoints[i].push_back(p.getCentroid2D());
                 for( int pt = 0; pt < p.getVertices().size(); pt+=numAttractionP) {
-                    if(p.getVertices().at(pt).x>overLaps[i]+ofsetlistX[i])attractPoints.push_back(p.getVertices().at(pt));
+                    if(p.getVertices().at(pt).x>overLaps[i]+ofsetlistX[i])attractPoints[i].push_back(p.getVertices().at(pt));
                     
                 }
             }
@@ -315,8 +334,47 @@ void ofApp::update(){
     }
     
 
-    if(bDebug)attractPoints.push_back(ofPoint((RES_W/ofGetWidth() ) * mouseX, (RES_W/ofGetWidth())*mouseY)); // add mouse interaction on debug
+    if(bDebug)attractPoints[1].push_back(ofPoint((RES_W/ofGetWidth() ) * mouseX, (RES_W/ofGetWidth())*mouseY)); // add mouse interaction on debug
 
+    
+
+    for(int i = 0 ; i< soundGrid.size() ; i++){
+        for(int u = 0; u<soundGrid[i].size();u++){
+            
+            bool on = false;
+            int iter = 0;
+            
+            for(int a = 0; a<blobs.size();a++){
+                for(int b = 0; b<blobs[a].size();b++){
+                    
+                    ofPolyline p=blobs[a][b];
+                    if(p.size()>0){
+                        
+                        if(abs(centroids[iter].x - soundGrid[i][u].x)<RES_W/6){
+                            
+                            if( insidePolygon(soundGrid[i][u], p)){
+                                on=true;
+                            }
+                        }
+                        iter ++;
+                    }
+                }
+            }
+            
+            if(on && !soundToggle[i][u]){
+                ofxOscMessage m;
+                m.setAddress("/"+ofToString(i)+"/"+ofToString(u));
+                m.addInt32Arg(1);
+                soundSender.sendMessage(m);
+                soundToggle[i][u]=true;
+            }
+            if(!on && soundToggle[i][u]){
+                soundToggle[i][u] = false;
+            }  
+        }
+    }
+    
+    int calculations= 0;
     if(swarm){
         if(useB2d){
             
@@ -325,22 +383,29 @@ void ofApp::update(){
             bool bRepelFrom = false;
 
             for(int i = 0; i<customParticles.size();i++){
-                for(int u= 0;u<attractPoints.size();u++){
+
+                int cNum =customParticles[i]->num;
+                
+                
+                for(int a= 0;a<attractPoints[cNum].size();a++){
+                    
+                    
                     int x1 = customParticles[i]->getPosition().x;
                     int y1 = customParticles[i]->getPosition().y;
                     
-                    int x2 = attractPoints[u].x;
-                    int y2 = attractPoints[u].y;
+                    int x2 = attractPoints[cNum][a].x;
+                    int y2 = attractPoints[cNum][a].y;
                     
                     if(1/b2InvSqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2))<sNear){
-                        customParticles[i]->addRepulsionForce(attractPoints[u],b2dRepulsion);
+                        customParticles[i]->addRepulsionForce(attractPoints[cNum][a],b2dRepulsion);
+                        // customParticles[i]->setPosition(ofRandom(customParticles[i]->num*(RES_W/4), (customParticles[i]->num+1)*(RES_W/4)), -100);
+                        
                     }
+                    calculations++;
                 }
-                
               //  for(int u = 0; u<centroids.size();u++) customParticles[i]->addRepulsionForce(centroids[u],b2dRepulsion);
-
             }
-            
+            cout <<calculations<<endl;
 //            polyShapes.clear();
 //           // rects.clear();
 //            for(int i = 0; i<blobs.size();i++){
@@ -381,20 +446,20 @@ void ofApp::update(){
             vbo.setVertexData(&mesh.getVertices()[0], SWARM_NUM, GL_STATIC_DRAW);
         }
         
-        else{
-            mesh.clear();
-            for(unsigned int i = 0; i < swarmParticles.size(); i++){
-                swarmParticles[i].sNear = sNear;
-                swarmParticles[i].sFar = sFar;
-                swarmParticles[i].update();
-                //pointSizes[i] += sin(ofGetElapsedTimef() *10) -5;
-                mesh.addVertex(ofVec3f(swarmParticles[i].pos.x,swarmParticles[i].pos.y,pointSizes[i] ));
-            }
-            vbo.setVertexData(&mesh.getVertices()[0], SWARM_NUM, GL_STATIC_DRAW);
-        }
+//        else{
+//            mesh.clear();
+//            for(unsigned int i = 0; i < swarmParticles.size(); i++){
+//                swarmParticles[i].sNear = sNear;
+//                swarmParticles[i].sFar = sFar;
+//                swarmParticles[i].update();
+//                //pointSizes[i] += sin(ofGetElapsedTimef() *10) -5;
+//                mesh.addVertex(ofVec3f(swarmParticles[i].pos.x,swarmParticles[i].pos.y,pointSizes[i] ));
+//            }
+//            vbo.setVertexData(&mesh.getVertices()[0], SWARM_NUM, GL_STATIC_DRAW);
+//        }
     }
-    int red = ((sin(ofGetElapsedTimef()/10))+1) * 160/2;
-    clusterRange2.set(ofColor(red,clusterRange2->g,255-red));
+//    int red = ((sin(ofGetElapsedTimef()/10))+1) * 160/2;
+//    clusterRange2.set(ofColor(red,clusterRange2->g,255-red));
     if(cluster){
         //int red = int(ofMap(numBlobs,0,5,0,160));
         
@@ -523,8 +588,11 @@ void ofApp::update(){
         ofDrawLine(0, offSet3Y, RES_W, offSet3Y);
         ofDrawLine(0, offSet4Y, RES_W, offSet4Y);
         
+
         for(int i=0; i<attractPoints.size(); i++) {
-            ofDrawCircle(attractPoints[i],5);
+            for(int u=0; u<attractPoints[i].size(); u++) {
+                ofDrawCircle(attractPoints[i][u],5);
+            }
         }
         
         ofSetLineWidth(2);
@@ -533,6 +601,12 @@ void ofApp::update(){
             ofDrawLine(i, 0, i, RES_H);
             ofDrawBitmapStringHighlight(ofToString(i)+ " m", i+10, 10);
         
+        }
+        
+        for(int i = 0 ; i< soundGrid.size() ; i++){
+            for(int u = 0; u<soundGrid[i].size();u++){
+                ofDrawCircle(soundGrid[i][u],20);
+            }
         }
 
     }

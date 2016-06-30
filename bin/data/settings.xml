@@ -50,10 +50,10 @@
 	<group>
 		<background>0, 0, 0, 255</background>
 		<swarm>255, 255, 255, 255</swarm>
-		<cluster_color>159, 99, 96, 255</cluster_color>
+		<cluster_color>134, 99, 121, 255</cluster_color>
 	<swarmnBox2dColor>255, 255, 255, 255</swarmnBox2dColor>
 	<scale1>1.42347</scale1>
-		<numAttraction>5</numAttraction>
+		<numAttraction>1</numAttraction>
 		<one>
 			<offSet1X>0</offSet1X>
 			<offSet1Y>0</offSet1Y>
