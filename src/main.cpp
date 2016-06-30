@@ -10,7 +10,7 @@ int main( ){
     
     
     ofGLFWWindowSettings settings;
-    settings.width =600;
+    settings.width =300;
     settings.height = 800;
     ofCreateWindow(settings);
     

@@ -178,7 +178,7 @@ void ofApp::setup(){
             p->num =fours;
             pointSizes.push_back(r);
             
-            colorMesh.addVertex(ofVec3f(fazerColors[fours].r,fazerColors[fours].g,fazerColors[fours].b));
+            colorMesh.addVertex(ofVec3f(fazerColors[cIndx].r,fazerColors[cIndx].g,fazerColors[cIndx].b));
             cIndx = i%fazerColors.size();
             
         }
@@ -217,23 +217,41 @@ void ofApp::setup(){
         }
         clusters.back().vbo.setNormalData(&colorMesh.getVertices()[0], (int)num, GL_STATIC_DRAW);
     }
+//    string path = "animals";
+//    ofDirectory dir(path);
+//
+//    dir.allowExt("mov");
+//    dir.listDir();
+//    
+//    for(int i = 0; i<dir.size();i+=2){
+//        Animal ani = *new Animal;
+//        ani.setup(ofVec2f(i*200+200,RES_H/2),"/ani/"+ofToString(int(i/2),0),dir.getPath(i),dir.getPath(i+1),&attractPoints);
+//        animals.push_back(ani);
+//    }
+    
    
-    soundGrid.resize(13);
-    soundToggle.resize(13);
-    soundAge.resize(13);
-    int stepX = RES_W/soundGrid.size();
-    int stepY = RES_H/3;
-    for(int i = 0 ; i< soundGrid.size() ; i++){
-        
+ //   soundGrid.resize(13);
+ //   soundToggle.resize(13);
+    
+    int stepX = RES_W/13;
+    int stepY = RES_H/4;
+    for(int i = 0 ; i< 13 ; i++){
+        int mod = 0;
         for(int u = 0; u<3;u++){
-            bool b = false;
-            soundGrid[i].push_back(ofVec2f(i*stepX + 50, u*stepY+50));
-            soundToggle[i].push_back(b);
-            soundAge[i].push_back(10);
+            soundParticle s = *new soundParticle ;
+            mod = i%2;
+            s.pos =ofVec2f(i*stepX + stepX/2, u*stepY+mod*100+100);
+            s.toggle = false;
+            s.name = "/"+ofToString(i)+"/"+ofToString(u);
+            sounds.push_back(s);
+//            bool b = false;
+//            soundGrid[i].push_back(ofVec2f(i*stepX + stepX/2, u*stepY+mod*100+100));
+//            soundToggle[i].push_back(b);
         }
     }
     soundSender.setup("localhost",3000);
     drawGui = true;
+    bDebug = false;
     attractPoints.resize(4);
     syphon.setName("FazerParticles");
 }
@@ -291,23 +309,36 @@ void ofApp::update(){
     
     
    // add random blob
-    if(bDebug){
-        blobs[0][0].clear();
-        //testPoly
-        ofPolyline line;
-        float i = 0;
-        while (i < TWO_PI ) { // make a heart
-            float r = (2-2*sin(i) + sin(i)*sqrt(abs(cos(i))) / (sin(i)+1.4)) * -80;
-            float x = ofGetWidth()/2 + cos(i) * r;
-            float y = ofGetHeight()/2 + sin(i) * r;
-            line.addVertex(ofVec2f(x+offSet1X,y+offSet1Y));
-            i+=0.005*HALF_PI*0.5;
-        }
-        
-        line.close(); // close the shape
-        
-        blobs[0][0]=line;
-    }
+//    if(bDebug){
+//        blobs[0][0].clear();
+//        blobs[0][1].clear();
+//        //testPoly
+//        ofPolyline line;
+//        float i = 0;
+//        while (i < TWO_PI ) { // make a heart
+//            float r = (2-2*sin(i) + sin(i)*sqrt(abs(cos(i))) / (sin(i)+1.4)) * -80;
+//            float x = ofGetWidth()/2 + cos(i) * r;
+//            float y = ofGetHeight()/2 + sin(i) * r;
+//            line.addVertex(ofVec2f(x+RES_W/6+offSet1X,y+offSet1Y));
+//            i+=0.005*HALF_PI*0.5;
+//        }
+//        
+//        line.close(); // close the shape
+//        
+//        ofPolyline line2;
+//        i = 0;
+//        while (i < TWO_PI ) { // make a heart
+//            float r = (2-2*sin(i) + sin(i)*sqrt(abs(cos(i))) / (sin(i)+1.4)) * -80;
+//            float x = ofGetWidth()/2 + cos(i) * r ;
+//            float y = ofGetHeight()/2 + sin(i) * r;
+//            line2.addVertex(ofVec2f(x+offSet1X,y+offSet1Y));
+//            i+=0.005*HALF_PI*0.5;
+//        }
+//        
+//        line2.close(); // close the shape
+//        blobs[0][0]=line;
+//        blobs[0][1]=line2;
+//    }
 
 
     for(int i = 0; i<attractPoints.size();i++ )attractPoints[i].clear();
@@ -326,7 +357,10 @@ void ofApp::update(){
                 centroids.push_back(p.getCentroid2D());
                 attractPoints[i].push_back(p.getCentroid2D());
                 for( int pt = 0; pt < p.getVertices().size(); pt+=numAttractionP) {
-                    if(p.getVertices().at(pt).x>overLaps[i]+ofsetlistX[i])attractPoints[i].push_back(p.getVertices().at(pt));
+                    int x = p.getVertices().at(pt).x;
+                    int aNum = int(ofMap(x, 0, RES_W, 0, 4));
+                   
+                    if(x>overLaps[i]+ofsetlistX[i])attractPoints[aNum].push_back(p.getVertices().at(pt));
                     
                 }
             }
@@ -338,43 +372,53 @@ void ofApp::update(){
 
     
 
-    for(int i = 0 ; i< soundGrid.size() ; i++){
-        for(int u = 0; u<soundGrid[i].size();u++){
+    for(int i = 0; i<sounds.size();i++){
+      //  for(int u = 0; u<soundGrid[i].size();u++){
             
-            bool on = false;
-            int iter = 0;
-            
-            for(int a = 0; a<blobs.size();a++){
-                for(int b = 0; b<blobs[a].size();b++){
+
+        bool on = false;
+        int iter = 0;
+        
+        for(int a = 0; a<blobs.size();a++){
+            for(int b = 0; b<blobs[a].size();b++){
+                
+                ofPolyline p=blobs[a][b];
+                if(p.size()>0){
                     
-                    ofPolyline p=blobs[a][b];
-                    if(p.size()>0){
+                    if(abs(centroids[iter].x - sounds[i].pos.x)<RES_W/6){
                         
-                        if(abs(centroids[iter].x - soundGrid[i][u].x)<RES_W/6){
-                            
-                            if( insidePolygon(soundGrid[i][u], p)){
-                                on=true;
-                            }
+                        if( insidePolygon(sounds[i].pos, p)){
+                            on=true;
                         }
-                        iter ++;
                     }
+                    iter ++;
                 }
             }
-            
-            if(on && !soundToggle[i][u]){
-                ofxOscMessage m;
-                m.setAddress("/"+ofToString(i)+"/"+ofToString(u));
-                m.addInt32Arg(1);
-                soundSender.sendMessage(m);
-                soundToggle[i][u]=true;
-            }
-            if(!on && soundToggle[i][u]){
-                soundToggle[i][u] = false;
-            }  
         }
+        
+        if(on && !sounds[i].toggle){
+            ofxOscMessage m;
+            m.setAddress(sounds[i].name);
+            m.addInt32Arg(1);
+            soundSender.sendMessage(m);
+            sounds[i].toggle=true;
+        }
+        if(!on && sounds[i].toggle){
+            sounds[i].toggle = false;
+        }
+        
     }
     
-    int calculations= 0;
+//    for(int i = 0 ; i< animals.size();i++){
+//        animals[i].update();
+//        if(animals[i].sendOsc){
+//            ofxOscMessage m;
+//            m.setAddress(animals[i].oscAddress);
+//            m.addIntArg(1);
+//            soundSender.sendMessage(m);
+//        }
+//    }
+    
     if(swarm){
         if(useB2d){
             
@@ -386,12 +430,13 @@ void ofApp::update(){
 
                 int cNum =customParticles[i]->num;
                 
+                int x1 = customParticles[i]->getPosition().x;
+                int y1 = customParticles[i]->getPosition().y;
                 
                 for(int a= 0;a<attractPoints[cNum].size();a++){
                     
                     
-                    int x1 = customParticles[i]->getPosition().x;
-                    int y1 = customParticles[i]->getPosition().y;
+                    
                     
                     int x2 = attractPoints[cNum][a].x;
                     int y2 = attractPoints[cNum][a].y;
@@ -401,11 +446,20 @@ void ofApp::update(){
                         // customParticles[i]->setPosition(ofRandom(customParticles[i]->num*(RES_W/4), (customParticles[i]->num+1)*(RES_W/4)), -100);
                         
                     }
-                    calculations++;
                 }
+                
+                // repel from animals, version shit
+//                for(int u = 0 ; u<animals.size();u++){
+//                    int x2 = animals[i].pos.x ;
+//                    int y2 = animals[i].pos.y ;
+//                    if(1/b2InvSqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2))<100){
+//                        customParticles[i]->addRepulsionForce(animals[u].pos ,5);
+//                     //   customParticles[i]->setPosition(ofRandom(customParticles[i]->num*(RES_W/4), (customParticles[i]->num+1)*(RES_W/4)), -100);
+//                    }
+//                }
+                
               //  for(int u = 0; u<centroids.size();u++) customParticles[i]->addRepulsionForce(centroids[u],b2dRepulsion);
             }
-            cout <<calculations<<endl;
 //            polyShapes.clear();
 //           // rects.clear();
 //            for(int i = 0; i<blobs.size();i++){
@@ -564,7 +618,7 @@ void ofApp::update(){
     }
     
 
-   
+   //for(auto a: animals)a.draw();
 
     
     
@@ -591,6 +645,7 @@ void ofApp::update(){
 
         for(int i=0; i<attractPoints.size(); i++) {
             for(int u=0; u<attractPoints[i].size(); u++) {
+                ofSetColor(i*(255/4), 255-i*(255/4), i*(255/4));
                 ofDrawCircle(attractPoints[i][u],5);
             }
         }
@@ -603,10 +658,8 @@ void ofApp::update(){
         
         }
         
-        for(int i = 0 ; i< soundGrid.size() ; i++){
-            for(int u = 0; u<soundGrid[i].size();u++){
-                ofDrawCircle(soundGrid[i][u],20);
-            }
+        for(auto s:sounds){
+            ofDrawCircle(s.pos,20);
         }
 
     }

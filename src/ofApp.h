@@ -9,7 +9,7 @@
 #include "ofxBox2d.h"
 #include "defines.h"
 #include "ofxPostProcessing.h"
-
+#include "animal.h"
 #include "swarmParticle.h"
 #include "binnedSystem.h"
 
@@ -55,13 +55,15 @@ public:
         }
        // addAttractionPoint(attractionPoint,0.5);
         if(vel.length()<1)setVelocity(vel*2);
-        if(vel.length()>5)setVelocity(vel*0.8);
+        if(vel.length()>5)setVelocity(vel*0.5);
     }
 };
 
-class soundParticle{
+struct soundParticle{
     public:
-
+    ofVec2f pos;
+    string name;
+    bool toggle;
 };
 
 class ofApp : public ofBaseApp{
@@ -86,6 +88,8 @@ class ofApp : public ofBaseApp{
     vector<ofxOscReceiver>receivers;
     vector<vector<ofPolyline>>blobs;
     
+    vector<soundParticle>sounds;
+    vector<Animal>animals;
     int binnedReset;
     bool					drawGui;
     bool bDebug = true;
@@ -120,11 +124,7 @@ class ofApp : public ofBaseApp{
     //clusters
     vector<binnedSystem>clusters;
     binnedSystem backgroundCluster;
-    vector<ofImage>theTrees;
     
-    vector<vector<ofVec2f>> soundGrid;
-    vector<vector<bool>> soundToggle;
-    vector<vector<int>> soundAge;
     ofxOscSender soundSender;
     
     ofFbo pointSplineFbo;
@@ -136,9 +136,6 @@ class ofApp : public ofBaseApp{
     //box 2 d;
     ofxBox2d                             box2d;
     vector <shared_ptr<CustomParticle> > customParticles;
-    vector <shared_ptr<ofxBox2dCircle> >  circles;
-    vector <shared_ptr<ofxBox2dEdge> >   edges;
-    vector <shared_ptr<ofxBox2dRect> >   rects;
     vector <shared_ptr<ofxBox2dPolygon> > polyShapes;
     
     // swarm mesh and vbo
