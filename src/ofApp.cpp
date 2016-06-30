@@ -217,17 +217,17 @@ void ofApp::setup(){
         }
         clusters.back().vbo.setNormalData(&colorMesh.getVertices()[0], (int)num, GL_STATIC_DRAW);
     }
-//    string path = "animals";
-//    ofDirectory dir(path);
-//
-//    dir.allowExt("mov");
-//    dir.listDir();
-//    
-//    for(int i = 0; i<dir.size();i+=2){
-//        Animal ani = *new Animal;
-//        ani.setup(ofVec2f(i*200+200,RES_H/2),"/ani/"+ofToString(int(i/2),0),dir.getPath(i),dir.getPath(i+1),&attractPoints);
-//        animals.push_back(ani);
-//    }
+    string path = "animals";
+    ofDirectory dir(path);
+
+    dir.allowExt("mov");
+    dir.listDir();
+    
+    for(int i = 0; i<dir.size();i+=2){
+        Animal ani = *new Animal;
+        ani.setup(ofVec2f(i*200+200,RES_H/2),"/ani/"+ofToString(int(i/2),0),dir.getPath(i),dir.getPath(i+1),&attractPoints);
+        animals.push_back(ani);
+    }
     
    
  //   soundGrid.resize(13);
@@ -251,7 +251,7 @@ void ofApp::setup(){
     }
     soundSender.setup("localhost",3000);
     drawGui = true;
-    bDebug = false;
+    bDebug = true;
     attractPoints.resize(4);
     syphon.setName("FazerParticles");
 }
@@ -309,36 +309,36 @@ void ofApp::update(){
     
     
    // add random blob
-//    if(bDebug){
-//        blobs[0][0].clear();
-//        blobs[0][1].clear();
-//        //testPoly
-//        ofPolyline line;
-//        float i = 0;
-//        while (i < TWO_PI ) { // make a heart
-//            float r = (2-2*sin(i) + sin(i)*sqrt(abs(cos(i))) / (sin(i)+1.4)) * -80;
-//            float x = ofGetWidth()/2 + cos(i) * r;
-//            float y = ofGetHeight()/2 + sin(i) * r;
-//            line.addVertex(ofVec2f(x+RES_W/6+offSet1X,y+offSet1Y));
-//            i+=0.005*HALF_PI*0.5;
-//        }
-//        
-//        line.close(); // close the shape
-//        
-//        ofPolyline line2;
-//        i = 0;
-//        while (i < TWO_PI ) { // make a heart
-//            float r = (2-2*sin(i) + sin(i)*sqrt(abs(cos(i))) / (sin(i)+1.4)) * -80;
-//            float x = ofGetWidth()/2 + cos(i) * r ;
-//            float y = ofGetHeight()/2 + sin(i) * r;
-//            line2.addVertex(ofVec2f(x+offSet1X,y+offSet1Y));
-//            i+=0.005*HALF_PI*0.5;
-//        }
-//        
-//        line2.close(); // close the shape
-//        blobs[0][0]=line;
-//        blobs[0][1]=line2;
-//    }
+    if(bDebug){
+        blobs[0][0].clear();
+        blobs[0][1].clear();
+        //testPoly
+        ofPolyline line;
+        float i = 0;
+        while (i < TWO_PI ) { // make a heart
+            float r = (2-2*sin(i) + sin(i)*sqrt(abs(cos(i))) / (sin(i)+1.4)) * -80;
+            float x = ofGetWidth()/2 + cos(i) * r;
+            float y = ofGetHeight()/2 + sin(i) * r;
+            line.addVertex(ofVec2f(x+RES_W/6+offSet1X,y+offSet1Y));
+            i+=0.005*HALF_PI*0.5;
+        }
+        
+        line.close(); // close the shape
+        
+        ofPolyline line2;
+        i = 0;
+        while (i < TWO_PI ) { // make a heart
+            float r = (2-2*sin(i) + sin(i)*sqrt(abs(cos(i))) / (sin(i)+1.4)) * -80;
+            float x = ofGetWidth()/2 + cos(i) * r ;
+            float y = ofGetHeight()/2 + sin(i) * r;
+            line2.addVertex(ofVec2f(x+offSet1X,y+offSet1Y));
+            i+=0.005*HALF_PI*0.5;
+        }
+        
+        line2.close(); // close the shape
+        blobs[0][0]=line;
+        blobs[0][1]=line2;
+    }
 
 
     for(int i = 0; i<attractPoints.size();i++ )attractPoints[i].clear();
@@ -406,18 +406,23 @@ void ofApp::update(){
         if(!on && sounds[i].toggle){
             sounds[i].toggle = false;
         }
-        
     }
     
-//    for(int i = 0 ; i< animals.size();i++){
-//        animals[i].update();
-//        if(animals[i].sendOsc){
-//            ofxOscMessage m;
-//            m.setAddress(animals[i].oscAddress);
-//            m.addIntArg(1);
-//            soundSender.sendMessage(m);
-//        }
-//    }
+    for(int i = 0 ; i< animals.size();i++){
+        animals[i].update();
+        if(animals[i].sendOsc){
+            ofxOscMessage m;
+            m.setAddress(animals[i].oscAddress);
+            m.addIntArg(1);
+            soundSender.sendMessage(m);
+        }
+        for(int u = i+1; u<animals.size();u++){
+            if(abs(animals[u].pos.x-animals[i].pos.x )<140){
+                animals[u].vel.x *=-1;
+                animals[i].vel.x *=-1;
+            }
+        }
+    }
     
     if(swarm){
         if(useB2d){
@@ -432,6 +437,19 @@ void ofApp::update(){
                 
                 int x1 = customParticles[i]->getPosition().x;
                 int y1 = customParticles[i]->getPosition().y;
+                
+                // repel from animals, version shit
+                for(int u = 0 ; u<animals.size();u++){
+                    if(!animals[u].touched){
+                        int x2 = animals[u].pos.x ;
+                        int y2 = animals[u].pos.y ;
+                        
+                        if(1/b2InvSqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2))<150){
+                            customParticles[i]->addRepulsionForce(animals[u].pos ,b2dRepulsion);
+                            //customParticles[i]->setPosition(ofRandom(customParticles[i]->num*(RES_W/4), (customParticles[i]->num+1)*(RES_W/4)), -100);
+                        }
+                    }
+                }
                 
                 for(int a= 0;a<attractPoints[cNum].size();a++){
                     
@@ -448,15 +466,7 @@ void ofApp::update(){
                     }
                 }
                 
-                // repel from animals, version shit
-//                for(int u = 0 ; u<animals.size();u++){
-//                    int x2 = animals[i].pos.x ;
-//                    int y2 = animals[i].pos.y ;
-//                    if(1/b2InvSqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2))<100){
-//                        customParticles[i]->addRepulsionForce(animals[u].pos ,5);
-//                     //   customParticles[i]->setPosition(ofRandom(customParticles[i]->num*(RES_W/4), (customParticles[i]->num+1)*(RES_W/4)), -100);
-//                    }
-//                }
+
                 
               //  for(int u = 0; u<centroids.size();u++) customParticles[i]->addRepulsionForce(centroids[u],b2dRepulsion);
             }
@@ -606,7 +616,7 @@ void ofApp::update(){
     
     ofEnableAlphaBlending();
 
-    ofBackground(clusterRange1);
+  //  ofBackgroundGradient(clusterRange1,clusterRange2, OF_GRADIENT_LINEAR);
     
     
 
@@ -618,7 +628,7 @@ void ofApp::update(){
     }
     
 
-   //for(auto a: animals)a.draw();
+   for(auto a: animals)a.draw();
 
     
     
@@ -660,6 +670,12 @@ void ofApp::update(){
         
         for(auto s:sounds){
             ofDrawCircle(s.pos,20);
+        }
+        ofNoFill();
+        ofSetColor(255);
+        ofSetLineWidth(3);
+        for(int i = 0; i<animals.size();i++){
+            ofDrawCircle(animals[i].pos,150);
         }
 
     }

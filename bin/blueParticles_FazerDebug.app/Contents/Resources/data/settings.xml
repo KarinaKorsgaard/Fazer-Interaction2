@@ -26,7 +26,7 @@
 		</four>
 	</offsetControl>
 	<visuals>
-		<swarm>1</swarm>
+		<swarm>0</swarm>
 		<clusters>0</clusters>
 		<perlin>0</perlin>
 		<bBox2d>1</bBox2d>
@@ -53,9 +53,9 @@
 		<cluster_color>134, 99, 121, 255</cluster_color>
 	<swarmnBox2dColor>255, 255, 255, 255</swarmnBox2dColor>
 	<scale1>1.42347</scale1>
-		<numAttraction>14</numAttraction>
+		<numAttraction>12</numAttraction>
 		<one>
-			<offSet1X>900</offSet1X>
+			<offSet1X>639.692</offSet1X>
 			<offSet1Y>0</offSet1Y>
 		</one>
 		<two>

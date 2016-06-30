@@ -18,104 +18,145 @@ class Animal {
 public:
     string oscAddress;
     ofVec2f pos;
-    ofVideoPlayer still;
-    ofVideoPlayer moving;
+    ofVideoPlayer* still;
+    ofVideoPlayer* moving;
     bool touched;
     ofPolyline poly;
     ofRectangle boundingBox;
     float radius;
     vector< vector<ofPoint>>* attractPoints;
     int w,h;
-    
+    ofVec2f vel;
     bool sendOsc = false;
-    bool fowards;
-    bool backwards;
 
+    bool beginSequence = false;
+    bool isOn = false;
+    bool contract = false;
+    bool expand = false;
+    bool resetForContract = false;
+    
+    bool track = false;
+    ofVec2f acc;
 //    shared_ptr<ofxBox2dPolygon> b2dPoly;
 
     void setup(ofVec2f _pos, string _oscAddress, string _moving, string _still,  vector<vector <ofPoint>>* _attractPoints){
-        still.load(_still);
-        moving.load(_moving);
+        still = new ofVideoPlayer;
+        moving = new ofVideoPlayer;
+        still->load(_still);
+        moving->load(_moving);
         
         
         
-        still.setLoopState(OF_LOOP_NORMAL);
-        moving.setLoopState(OF_LOOP_NONE);
-        w = still.getWidth();
-        h = still.getHeight();
+        still->setLoopState(OF_LOOP_NORMAL);
+        moving->setLoopState(OF_LOOP_NONE);
+        w = still->getWidth();
+        h = still->getHeight();
         pos = _pos;
+        
+//        if(pos.x<210)track=true;
         oscAddress = _oscAddress;
         touched = false;
         attractPoints = _attractPoints;
-        still.update();
-        still.play();
-        
 
+        radius = 150;
+        vel = ofVec2f(ofRandom(-2,2), ofRandom(-0.5,0.5));
+        if(vel.x<0.4)vel.x = 2;
+       // acc = ofVec2f(ofRandom(-1,1),-0.8);
     }
     
     void update(){
-        bool on = false;
+        isOn = false;
         sendOsc= false;
 
         int region =0;
         region = int(ofMap(pos.x,0,RES_W,0,4));
         for(int i = 0 ; i<attractPoints->at(region).size();i++){
-            ofPoint p = attractPoints->at(region)[i];
-            if(dist(pos,p)<radius){
-                on = true;
-                still.setLoopState(OF_LOOP_NONE);
+            if(!isOn){
+                ofPoint p = attractPoints->at(region)[i];
+                if(dist(pos,p)<120){
+                    isOn = true;
+                }
             }
         }
         
-        if(on && !still.isPlaying() && !touched){
+        if(isOn && !beginSequence){
+            beginSequence = true;
             touched = true;
-            fowards = true;
-            sendOsc = true;
-            moving.play();
+            sendOsc= true;
+            moving->setFrame(0);
+            bool contract = false;
+            bool expand = false;
+            
+            if(track)cout<<"begin"<<endl;
         }
 
-        if(fowards){
-            if(!moving.isPlaying() || !on ){
-                backwards = true;
-                moving.setSpeed(-1);
-                fowards = false;
+        if(beginSequence){
+            if(!expand){
+                expand = true;
+                moving->setSpeed(1);
+                moving->play();
+                if(track)cout<<"expand"<<endl;
+            }
+            
+            if(expand &&  !moving->isPlaying() && !resetForContract){
+                resetForContract = true;
+                moving->setFrame(120);
+                moving->setPaused(true);
+                if(track)cout<<"limbo"<<endl;
+                // moving->setPaused(true);
+               // if(track)cout<<"limbo"<<endl;
+            }
+            
+            if(expand && !isOn && !contract){
+               // expand = false;
+                contract = true;
+                moving->setPaused(false);
+                moving->setSpeed(-1);
+                moving->play();
+                if(track)cout<<"contract"<<endl;
+            }
+            
+            if(contract && isOn){
+                contract = false;
+                expand = true;
+                resetForContract = false;
+                moving->setSpeed(1);
+                if(track)cout<<"re-expand"<<endl;
+            }
+            
+            if(contract && !moving->isPlaying()){
+                contract = false;
+                expand = false;
+                beginSequence = false;
+                touched = false;
+                resetForContract=false;
+                if(track)cout<<"stop"<<endl;
             }
         }
-        if(backwards && !moving.isPlaying()){
-            backwards = false;
-            moving.setSpeed(1);
+    
+        
+        
+        if(!touched) still->update();
+        else moving->update();
+        
+        
+        // move : borders:
+        int lim =150;
+        if( pos.x > RES_W-lim ){
+            pos.x = RES_W-lim;
+            vel.x *= -1;
+        }else if( pos.x < lim ){
+            pos.x = lim;
+            vel.x *= -1;
         }
-        
-        if(!fowards && !backwards && !on){
-            touched = false;
-            still.setLoopState(OF_LOOP_NORMAL);
-            still.play();
+        if( pos.y > RES_H-lim){
+            pos.y = RES_H-lim;
+            vel.y = -ofRandom(3);
         }
-        
-//        if(touched && !moving.isPlaying() && !reverse){
-//            reverse = true;
-//            moving.setSpeed(-1);
-//            moving.play();
-//        }
-//        if(touched && !on && moving.isPlaying()){
-//            reverse = true;
-//            moving.setSpeed(-1);
-////            moving.play();
-//        }
-
-
 
         
-
-        
-        
-
-        
-        
-        if(!touched) still.update();
-        else moving.update();
-        
-        
+        pos+=vel;
+        vel.y+=0.03;
     }
     
     void draw(){
@@ -123,10 +164,10 @@ public:
         ofTranslate(pos);
 
         ofSetColor(ofColor::white);
-        if(!touched)still.draw(-w/2,-h/2,w,h);
-        else moving.draw(-w/2,-h/2,w,h);
-        ofTranslate(0,-200);
-        ofSetColor(ofColor::white);
+        if(!touched)still->draw(-w/2,-h/2,w,h);
+       // ofSetColor(ofColor::green);
+        if(touched) moving->draw(-w/2,-h/2,w,h);
+    
 
 
 
