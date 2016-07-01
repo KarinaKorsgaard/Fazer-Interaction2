@@ -44,8 +44,6 @@ void ofApp::setup(){
     aligning.add(three);
     aligning.add(four);
     
-    
-    
     visualControl.setName("visuals");
     visualControl.add(swarm.set("swarm", true));
     visualControl.add(drawAnimals.set("drawAnimals", true));
@@ -119,15 +117,6 @@ void ofApp::setup(){
     
     pointSpline.load("shader/shader");
  
-    if(useB2d){
-    
-        //box2d setup
-        box2d.init();
-        box2d.setGravity(0, 0);
-        box2d.createGround(0, RES_H, RES_W, RES_H);
-        box2d.setFPS(30.0);
-        box2d.registerGrabbing();
-    }
     ofImage fCol;
     fCol.load("fazerColors.png");
     int stripeW = fCol.getWidth() / 5;
@@ -137,71 +126,43 @@ void ofApp::setup(){
         
     }
     cout << fazerColors.size()<<endl;
-    // swarms
-    if(!useB2d){
-        int num = SWARM_NUM;
-        ofMesh colorMesh;
-        int cIndx = 0;
-        swarmParticles.assign(num, swarmParticle());
-        for(unsigned int i = 0; i < swarmParticles.size(); i++){
-           // swarmParticles[i].setAttractPoints(&attractPoints);
-            //        swarmParticles[i].sNear = &sNear;
-            //        swarmParticles[i].sFar = &sFar;
-            swarmParticles[i].reset();
-            
-            pointSizes.push_back(ofRandom(5, 35));
-            swarmParticles[i].radius =pointSizes.back();
-            colorMesh.addVertex(ofVec3f(fazerColors[cIndx].r,fazerColors[cIndx].g,fazerColors[cIndx].b));
-            cIndx = i%fazerColors.size();
-            
-        }
-        vbo.setNormalData(&colorMesh.getVertices()[0], (int)SWARM_NUM, GL_STATIC_DRAW);
-        
-    }else{
-        int num = SWARM_NUM;
-        ofMesh colorMesh;
-        int cIndx = 0;
-       // swarmParticles.assign(num, swarmParticle());
-        int fours = 0;
-        
-        for(unsigned int i = 0; i < num; i++){
-            fours = (i*4) / num;
-            
-            
-            customParticles.push_back(shared_ptr<CustomParticle>(new CustomParticle));
-            CustomParticle * p = customParticles.back().get();
-            float r = ofRandom(5, 35);		// a random radius 4px - 20px
-            //float density, float bounce, float friction
-            p->setPhysics(ofRandom(0.1,10), ofRandom(0.1,1.2) ,ofRandom(0.1,3));
-            p->setup(box2d.getWorld(), ofRandom((fours-1)*RES_W/4,fours*RES_W/4), ofRandom(100,RES_H-100), r);
-            p->radius=p->getRadius();
-            p->setVelocity(ofRandom(-0.5,0.5), ofRandom(-0.5,0.5));
-            p->attractionPoint = ofVec2f(fours*RES_W/4 +RES_W/8, RES_H/2);
-            p->num =fours;
-            pointSizes.push_back(r);
-            
-            colorMesh.addVertex(ofVec3f(fazerColors[cIndx].r,fazerColors[cIndx].g,fazerColors[cIndx].b));
-            cIndx = i%fazerColors.size();
-            
-        }
-        vbo.setNormalData(&colorMesh.getVertices()[0], (int)SWARM_NUM, GL_STATIC_DRAW);
+
+
+    box2d.init();
+    box2d.setGravity(0, 0);
+    box2d.createGround(0, RES_H, RES_W, RES_H);
+    box2d.setFPS(30.0);
+    box2d.registerGrabbing();
     
-    }
-    
-//    post.init(RES_W,RES_H);
-//    
-//    post.createPass<BleachBypassPass>()->setEnabled(false);
-//    post.createPass<BloomPass>()->setEnabled(false);
-//    post.createPass<ToonPass>()->setEnabled(false);
-//    post.createPass<RGBShiftPass>()->setEnabled(false);
-//    post.createPass<NoiseWarpPass>()->setEnabled(false);
-//    post.createPass<ContrastPass>()->setEnabled(false);
-//    post.createPass<LimbDarkeningPass>()->setEnabled(false);
-//    post.createPass<RimHighlightingPass>()->setEnabled(false);
-//    post.createPass<RGBShiftPass>()->setEnabled(false);
-    
+    int num = SWARM_NUM;
     ofMesh colorMesh;
     int cIndx = 0;
+    int fours = 0;
+    
+    for(unsigned int i = 0; i < num; i++){
+        fours = (i*4) / num;
+        customParticles.push_back(shared_ptr<CustomParticle>(new CustomParticle));
+        CustomParticle * p = customParticles.back().get();
+        float r = ofRandom(10, 65);		// a random radius 4px - 20px
+        r = ofRandom(10,r);
+        //float density, float bounce, float friction
+        p->setPhysics(ofRandom(0.1,10), ofRandom(0.1,1.2) ,ofRandom(0.1,3));
+        p->setup(box2d.getWorld(), ofRandom((fours-1)*RES_W/4,fours*RES_W/4), ofRandom(100,RES_H-100), r);
+        p->radius=p->getRadius();
+        p->setVelocity(ofRandom(-0.5,0.5), ofRandom(-0.5,0.5));
+        p->attractionPoint = ofVec2f(fours*RES_W/4 +RES_W/8, RES_H/2);
+        p->num =fours;
+        pointSizes.push_back(r);
+        
+        colorMesh.addVertex(ofVec3f(fazerColors[cIndx].r,fazerColors[cIndx].g,fazerColors[cIndx].b));
+        cIndx = i%fazerColors.size();
+        
+    }
+    vbo.setNormalData(&colorMesh.getVertices()[0], (int)SWARM_NUM, GL_STATIC_DRAW);
+    
+
+    colorMesh.clear();
+    cIndx = 0;
     //cluster / binned sys
     for(int i = 0 ; i<CLUSTER_NUM; i++){
         int size =ofRandom(20,100);
@@ -209,8 +170,7 @@ void ofApp::setup(){
         binnedSystem b;
         clusters.push_back(b);
         clusters.back().setup(ofVec2f((RES_W/(CLUSTER_NUM+1))*(i+1),ofRandom(100, RES_H-100)),num, size);
-        //clusters.back().attractPoints = &attractPoints;
-        //clusters.back().tree = &theTrees[int(ofRandom(theTrees.size()))];
+        clusters.back().attractPoints = &attractPoints;
         for(int u = 0; u< num;u++){
             colorMesh.addVertex(ofVec3f(fazerColors[cIndx].r,fazerColors[cIndx].g,fazerColors[cIndx].b));
             cIndx = u%fazerColors.size();
@@ -219,6 +179,7 @@ void ofApp::setup(){
         }
         clusters.back().vbo.setNormalData(&colorMesh.getVertices()[0], (int)num, GL_STATIC_DRAW);
     }
+    
     string path = "animals";
     ofDirectory dir(path);
 
@@ -231,9 +192,7 @@ void ofApp::setup(){
         animals.push_back(ani);
     }
     
-   
- //   soundGrid.resize(13);
- //   soundToggle.resize(13);
+
     
     int stepX = RES_W/13;
     int stepY = RES_H/4;
@@ -246,9 +205,6 @@ void ofApp::setup(){
             s.toggle = false;
             s.name = "/"+ofToString(i)+"/"+ofToString(u);
             sounds.push_back(s);
-//            bool b = false;
-//            soundGrid[i].push_back(ofVec2f(i*stepX + stepX/2, u*stepY+mod*100+100));
-//            soundToggle[i].push_back(b);
         }
     }
     soundSender.setup("localhost",3000);
@@ -373,14 +329,9 @@ void ofApp::update(){
     }
     
 
-    if(bDebug)attractPoints[1].push_back(ofPoint((RES_W/ofGetWidth() ) * mouseX, (RES_W/ofGetWidth())*mouseY)); // add mouse interaction on debug
-
-    
+    if(bDebug)attractPoints[1].push_back(ofPoint((RES_W/ofGetWidth() ) * mouseX, (RES_W/ofGetWidth())*mouseY)); // add mouse
 
     for(int i = 0; i<sounds.size();i++){
-      //  for(int u = 0; u<soundGrid[i].size();u++){
-            
-
         bool on = false;
         int iter = 0;
         
@@ -412,38 +363,32 @@ void ofApp::update(){
             sounds[i].toggle = false;
         }
     }
+    
     if(drawAnimals){
-    for(int i = 0 ; i< animals.size();i++){
-        animals[i].update();
-        if(animals[i].sendOsc){
-            ofxOscMessage m;
-            m.setAddress(animals[i].oscAddress);
-            m.addIntArg(1);
-            soundSender.sendMessage(m);
-        }
-        for(int u = i+1; u<animals.size();u++){
-            if(abs(animals[u].pos.x-animals[i].pos.x )<140){
-                animals[u].vel.x *=-1;
-                animals[i].vel.x *=-1;
+        for(int i = 0 ; i< animals.size();i++){
+            animals[i].update();
+            if(animals[i].sendOsc){
+                ofxOscMessage m;
+                m.setAddress(animals[i].oscAddress);
+                m.addIntArg(1);
+                soundSender.sendMessage(m);
+            }
+            for(int u = i+1; u<animals.size();u++){
+                if(abs(animals[u].pos.x-animals[i].pos.x )<140){
+                    animals[u].vel.x *=-1;
+                    animals[i].vel.x *=-1;
+                }
             }
         }
     }
-    }
+    
     if(swarm){
-        if(useB2d){
+        for(int i = 0; i<customParticles.size();i++){
+            int cNum =customParticles[i]->num;
+            int x1 = customParticles[i]->getPosition().x;
+            int y1 = customParticles[i]->getPosition().y;
             
-            // clusters
-            vector<ofVec2f>repelFrom;
-            bool bRepelFrom = false;
-
-            for(int i = 0; i<customParticles.size();i++){
-
-                int cNum =customParticles[i]->num;
-                
-                int x1 = customParticles[i]->getPosition().x;
-                int y1 = customParticles[i]->getPosition().y;
-                
-                if(drawAnimals){
+            if(drawAnimals){
                 // repel from animals, version shit
                 for(int u = 0 ; u<animals.size();u++){
                     if(!animals[u].touched){
@@ -452,109 +397,45 @@ void ofApp::update(){
                         
                         if(1/b2InvSqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2))<150){
                             customParticles[i]->addRepulsionForce(animals[u].pos ,b2dRepulsion);
-                            //customParticles[i]->setPosition(ofRandom(customParticles[i]->num*(RES_W/4), (customParticles[i]->num+1)*(RES_W/4)), -100);
                         }
                     }
                 }
-                }
-
-                if(!useInsidePoly){
-                    for(int a= 0;a<attractPoints[cNum].size();a++){
-                        int x2 = attractPoints[cNum][a].x;
-                        int y2 = attractPoints[cNum][a].y;
-                        
-                        if(1/b2InvSqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2))<sNear){
-                            
-                            customParticles[i]->addRepulsionForce(attractPoints[cNum][a],b2dRepulsion);
-                            // customParticles[i]->setPosition(ofRandom(customParticles[i]->num*(RES_W/4), (customParticles[i]->num+1)*(RES_W/4)), -100);
-                            
-                        }
-                    }
-                }
-                if(useInsidePoly){
-                    for(int a= 0;a<blobs[cNum].size();a++){
-                        
-                        
-                        
-                        if(insidePolygon(customParticles[i]->getPosition(), blobs[cNum][a])){
-                            customParticles[i]->addRepulsionForce(blobs[cNum][a].getCentroid2D(),b2dRepulsion);
-                            // customParticles[i]->setPosition(ofRandom(customParticles[i]->num*(RES_W/4), (customParticles[i]->num+1)*(RES_W/4)), -100);
-                            
-                        }
-                    }
-                }
-                
-
-                
-              //  for(int u = 0; u<centroids.size();u++) customParticles[i]->addRepulsionForce(centroids[u],b2dRepulsion);
             }
-//            polyShapes.clear();
-//           // rects.clear();
-//            for(int i = 0; i<blobs.size();i++){
-//                for(int u = 0; u<blobs[i].size();u++){
-//                    
-//                    ofPolyline drawing = blobs[i][u];
-//                    if(drawing.size()>3 && drawing.getBoundingBox().getArea()>15){
-//                        
-//                        drawing.setClosed(true);
-//                        // save the outline of the shape
-//                        
-//                        shared_ptr<ofxBox2dPolygon> poly = shared_ptr<ofxBox2dPolygon>(new ofxBox2dPolygon);
-////                        shared_ptr<ofxBox2dRect> rect = shared_ptr<ofxBox2dRect>(new ofxBox2dRect);
-////                        rect->setPhysics(density,bounce,friction);
-////                        rect->setup(box2d.getWorld(), drawing.getBoundingBox());
-////                        rects.push_back(rect);
-//                        poly->addVertices(drawing.getVertices());
-//                        poly->setPhysics(density, bounce, friction);
-//                        poly->triangulatePoly();
-//                        poly.get()->create(box2d.getWorld());
-//                        polyShapes.push_back(poly);
-//                        
-//                    }
-//                }
-//            }
-            box2d.update();
             
-            mesh.clear();
-            for(unsigned int i = 0; i < customParticles.size(); i++){
-                customParticles[i]->update();
-//                for(int i = 0 ; i<centroids.size();i++){
-//                    customParticles[i]->addRepulsionForce(centroids[i],b2dRepulsion);
-//                }
+            for(int a= 0;a<attractPoints[cNum].size();a++){
+                int x2 = attractPoints[cNum][a].x;
+                int y2 = attractPoints[cNum][a].y;
+                
+                if(1/b2InvSqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2))<sNear){
+                    
+                    customParticles[i]->addRepulsionForce(attractPoints[cNum][a],b2dRepulsion);
 
-                mesh.addVertex(ofVec3f(float(customParticles[i]->getPosition().x),float(customParticles[i]->getPosition().y),pointSizes[i]));
+                }
             }
-            // load to vbo for pointspline replacement
-            vbo.setVertexData(&mesh.getVertices()[0], SWARM_NUM, GL_STATIC_DRAW);
         }
-        
-//        else{
-//            mesh.clear();
-//            for(unsigned int i = 0; i < swarmParticles.size(); i++){
-//                swarmParticles[i].sNear = sNear;
-//                swarmParticles[i].sFar = sFar;
-//                swarmParticles[i].update();
-//                //pointSizes[i] += sin(ofGetElapsedTimef() *10) -5;
-//                mesh.addVertex(ofVec3f(swarmParticles[i].pos.x,swarmParticles[i].pos.y,pointSizes[i] ));
-//            }
-//            vbo.setVertexData(&mesh.getVertices()[0], SWARM_NUM, GL_STATIC_DRAW);
-//        }
+        box2d.update();
+    
+        mesh.clear();
+        for(unsigned int i = 0; i < customParticles.size(); i++){
+            customParticles[i]->update();
+            mesh.addVertex(ofVec3f(float(customParticles[i]->getPosition().x),float(customParticles[i]->getPosition().y),pointSizes[i]));
+        }
+        vbo.setVertexData(&mesh.getVertices()[0], SWARM_NUM, GL_STATIC_DRAW);
     }
-//    int red = ((sin(ofGetElapsedTimef()/10))+1) * 160/2;
-//    clusterRange2.set(ofColor(red,clusterRange2->g,255-red));
+
     if(cluster){
-        //int red = int(ofMap(numBlobs,0,5,0,160));
-        
-        
+        int red = ((sin(ofGetElapsedTimef()/10))+1) * 160/2;
+        clusterRange2.set(ofColor(red,clusterRange2->g,255-red));
         for(int i = 0 ; i< clusters.size();i++){
             clusters[i].update();
             clusters[i].oldApp = oldApp;
             if(numBlobs==0)  clusters[i].centerAttraction = 0;
             else clusters[i].centerAttraction = cAttraction;
-         //   clusters[i].particleRepulsion = pRepulsion;
         }
     }
-   
+
+
+
     //pointspline replacement
     if(cluster||swarm||bBox2d){
         pointSplineFbo.begin();
@@ -562,39 +443,35 @@ void ofApp::update(){
         glDepthMask(GL_FALSE);
         ofEnablePointSprites();
         ofEnableAlphaBlending();
-        if(blend_ADD)ofEnableBlendMode(OF_BLENDMODE_ADD);
+        ofEnableBlendMode(OF_BLENDMODE_ADD);
         
         pointSpline.begin();
-        if(evenColor)pointSpline.setUniform1f("evenColor", 1.);
-        else pointSpline.setUniform1f("evenColor", 0.);
-        
-        if(blurImg)pointSpline.setUniform1f("addthis", 7.5);
-        else pointSpline.setUniform1f("addthis", 2.2);
-        
-
-
-
-        
         if(cluster){
             int cIndex = 0;
             for(int i = 0 ; i< clusters.size();i++){
                 cIndex = i%fazerColors.size();
             
-              if(fluidcolor)pointSpline.setUniform3f("col", float(clusterRange2->r+clusters[i].r), float(clusterRange2->g+clusters[i].g), float(clusterRange2->b+clusters[i].b));
+                pointSpline.setUniform1f("evenColor", 1.);
+                pointSpline.setUniform1f("addthis", 7.5);
+                pointSpline.setUniform3f("col", float(clusterRange2->r+clusters[i].r), float(clusterRange2->g+clusters[i].g), float(clusterRange2->b+clusters[i].b));
                 
-              else pointSpline.setUniform3f("col", float(fazerColors[cIndex].r), float(fazerColors[cIndex].g), float(fazerColors[cIndex].b));
-
-               if(!blurImg) solid.bind();
-               else sparkImg.bind();
+                sparkImg.bind();
                 clusters[i].vbo.draw(GL_POINTS, 0, (int)clusters[i].particleSystem.size());
-                if(!blurImg) solid.unbind();
-                else sparkImg.unbind();
+                sparkImg.unbind();
                 
                 
             }
         }
-        
+        if(!blend_ADD){
+            ofDisableBlendMode();
+            ofEnableAlphaBlending();
+        }
         if(swarm){
+            if(evenColor)pointSpline.setUniform1f("evenColor", 1.);
+            else pointSpline.setUniform1f("evenColor", 0.);
+            
+            if(blurImg)pointSpline.setUniform1f("addthis", 7.5);
+            else pointSpline.setUniform1f("addthis", 2.2);
             
             int cIndex = 0;
             // bind the texture so that when all the points

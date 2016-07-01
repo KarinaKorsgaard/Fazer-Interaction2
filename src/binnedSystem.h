@@ -53,16 +53,11 @@ public:
         r = int(ofRandom(-20,20));
         g = int(ofRandom(-20,20));
         b = int(ofRandom(-20,20));
-      //  theWidth=1.05*sqrt(_amount)*_radius;
+
         uniqueWillow=int(ofRandom(10,35));
         uniqueSpeed=int(ofRandom(20,70));
         int modCount = 0;
 
-//        for(int i = 0;i<RES_H-_center.y + uniqueSpeed ;i+=uniqueSpeed){
-//            int modInverse = modCount%2 - 1;
-//            trunk.curveTo(ofVec2f(_center.x+(uniqueWillow*modInverse),i+_center.y));
-//            modCount++;
-//        }
 
         vel = ofVec2f(ofRandom(-0.5,0.5),ofRandom(-0.5,0.5));
         theWidth = 1.05*sqrt(_amount)*_radius;
@@ -87,7 +82,6 @@ public:
             float y = ofRandom(0, RES_H);
             BinnedParticle particle(x, y, 0, 0);
             particleSystem.add(particle);
-            //sizeMesh.addVertex(ofVec3f(ofRandom(10,_radius)));
         }
         
         //vbo.setNormalData(&colorMesh.getVertices()[0], (int)kBinnedParticles, GL_STATIC_DRAW);
@@ -101,26 +95,21 @@ public:
 
     }
 
-    void drawTree(){
-        float w =  tree->getWidth();
-        float h = tree->getHeight() ;
-        float newW = theWidth* 0.55;
-        float newH   = ( h/w ) * newW;
-        tree->draw(originalBincenter - (newW / 2) , binCenter.y -newH/4, newW, newH );
-        
-    }
-
     
     void update(){
 
-
-        
         // clusters
         repelFrom.clear();
         bRepelFrom = false;
-        for(int i = 0; i<attractPoints->size();i++){
-            if(1/b2InvSqrt((binCenter.x-attractPoints->at(i).x)*(binCenter.x-attractPoints->at(i).x)+(binCenter.y-attractPoints->at(i).y)*(binCenter.y-attractPoints->at(i).y))< particleSystem.getWidth()/2){
-                repelFrom.push_back(attractPoints->at(i));
+        
+        int cNum = int(ofMap(binCenter.x,0,RES_W,0,4));
+
+        for(int i = 0; i<attractPoints->at(cNum).size();i++){
+            int y = attractPoints->at(cNum)[i].y;
+            int x = attractPoints->at(cNum)[i].x;
+            
+            if(1/b2InvSqrt((binCenter.x-x)*(binCenter.x-x)+(binCenter.y-y)*(binCenter.y-y))< particleSystem.getWidth()/2){
+                repelFrom.push_back(ofPoint(x,y));
                 bRepelFrom = true;
             }
         }

@@ -4,7 +4,7 @@ uniform float addthis;
 void main() {
 
     gl_Position   = gl_ModelViewProjectionMatrix * gl_Vertex;
-    gl_PointSize   = gl_Vertex.z * addthis;
+    gl_PointSize   = gl_Vertex.z * addthis/1.1;
 	
     
     //float alpha   = gl_Normal.y;
