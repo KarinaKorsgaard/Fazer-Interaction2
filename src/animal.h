@@ -57,7 +57,7 @@ public:
         oscAddress = _oscAddress;
         touched = false;
         attractPoints = _attractPoints;
-
+        still->play();
         radius = 150;
         vel = ofVec2f(ofRandom(-2,2), ofRandom(-0.5,0.5));
         if(vel.x<0.4)vel.x = 2;

@@ -47,6 +47,7 @@ void ofApp::setup(){
     
     visualControl.setName("visuals");
     visualControl.add(swarm.set("swarm", true));
+    visualControl.add(drawAnimals.set("drawAnimals", true));
     visualControl.add(cluster.set("clusters", true));
     visualControl.add(cAttraction.set("cAttraction",0,0,1));
     visualControl.add(pRepulsion.set("pRepulsion",0,0,1));
@@ -407,7 +408,7 @@ void ofApp::update(){
             sounds[i].toggle = false;
         }
     }
-    
+    if(drawAnimals){
     for(int i = 0 ; i< animals.size();i++){
         animals[i].update();
         if(animals[i].sendOsc){
@@ -423,7 +424,7 @@ void ofApp::update(){
             }
         }
     }
-    
+    }
     if(swarm){
         if(useB2d){
             
@@ -438,6 +439,7 @@ void ofApp::update(){
                 int x1 = customParticles[i]->getPosition().x;
                 int y1 = customParticles[i]->getPosition().y;
                 
+                if(drawAnimals){
                 // repel from animals, version shit
                 for(int u = 0 ; u<animals.size();u++){
                     if(!animals[u].touched){
@@ -450,7 +452,8 @@ void ofApp::update(){
                         }
                     }
                 }
-                
+                }
+            
                 for(int a= 0;a<attractPoints[cNum].size();a++){
                     
                     
@@ -628,7 +631,7 @@ void ofApp::update(){
     }
     
 
-   for(auto a: animals)a.draw();
+   if(drawAnimals)for(auto a: animals)a.draw();
 
     
     
