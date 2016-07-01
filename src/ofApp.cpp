@@ -374,7 +374,7 @@ void ofApp::update(){
                 soundSender.sendMessage(m);
             }
             for(int u = i+1; u<animals.size();u++){
-                if(abs(animals[u].pos.x-animals[i].pos.x )<140){
+                if(abs(animals[u].pos.x-animals[i].pos.x )<50){
                     animals[u].vel.x *=-1;
                     animals[i].vel.x *=-1;
                 }

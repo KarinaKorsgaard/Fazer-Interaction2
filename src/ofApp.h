@@ -55,7 +55,7 @@ public:
         }
        // addAttractionPoint(attractionPoint,0.5);
         //if(vel.length()<1)setVelocity(vel*2);
-        //if(vel.length()>5)setVelocity(vel*0.5);
+        if(vel.length()>5)setVelocity(vel*0.5);
     }
 };
 
