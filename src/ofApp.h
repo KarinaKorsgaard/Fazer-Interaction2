@@ -126,7 +126,7 @@ class ofApp : public ofBaseApp{
     binnedSystem backgroundCluster;
     
     ofxOscSender soundSender;
-    
+    bool soudoLine;
     ofFbo pointSplineFbo;
     ofTexture sparkImg;
     ofTexture solid;

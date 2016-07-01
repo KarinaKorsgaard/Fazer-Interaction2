@@ -309,7 +309,7 @@ void ofApp::update(){
     
     
    // add random blob
-    if(bDebug){
+    if(soudoLine){
         blobs[0][0].clear();
         blobs[0][1].clear();
         //testPoly
@@ -716,7 +716,7 @@ void ofApp::draw(){
 void ofApp::keyPressed(int key){
     if(key=='d')bDebug = !bDebug;
     if(key=='s')drawGui = !drawGui;
-    
+    if(key=='l')soudoLine=!soudoLine;
     unsigned idx = key - '0';
     if (idx < post.size()) post[idx]->setEnabled(!post[idx]->getEnabled());
 
