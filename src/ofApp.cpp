@@ -36,7 +36,8 @@ void ofApp::setup(){
    // four.add(scale4.set("scale4",0,3,0));
     
     four.add(overLap3.set("overLap3",0,-700,700));
-    aligning.add(numAttractionP.set("numAttraction",5,1,20));
+    aligning.add(numAttractionP.set("numAttraction",5,1,60));
+    aligning.add(useInsidePoly.set("useInsidePoly", true));
     
     aligning.add(one);
     aligning.add(two);
@@ -255,6 +256,8 @@ void ofApp::setup(){
     bDebug = true;
     attractPoints.resize(4);
     syphon.setName("FazerParticles");
+   // ofSetFrameRate(30);
+    ofSetVerticalSync(true);
 }
 
 //--------------------------------------------------------------
@@ -302,6 +305,7 @@ void ofApp::update(){
                         
                     }
                     if(blobs[r][pointCloudIndx].size()>0) blobs[r][pointCloudIndx].addVertex(blobs[r][pointCloudIndx].getVertices()[0]);
+                    blobs[r][pointCloudIndx]=blobs[r][pointCloudIndx].getResampledBySpacing(numAttractionP);
 
                 }
             }
@@ -337,8 +341,8 @@ void ofApp::update(){
         }
         
         line2.close(); // close the shape
-        blobs[0][0]=line;
-        blobs[0][1]=line2;
+        blobs[0][0]=line.getResampledBySpacing(numAttractionP);
+        blobs[1][0]=line2.getResampledBySpacing(numAttractionP);
     }
 
 
@@ -357,7 +361,7 @@ void ofApp::update(){
             if(p.size()>0){
                 centroids.push_back(p.getCentroid2D());
                 attractPoints[i].push_back(p.getCentroid2D());
-                for( int pt = 0; pt < p.getVertices().size(); pt+=numAttractionP) {
+                for( int pt = 0; pt < p.getVertices().size(); pt++) {
                     int x = p.getVertices().at(pt).x;
                     int aNum = int(ofMap(x, 0, RES_W, 0, 4));
                    
@@ -453,19 +457,30 @@ void ofApp::update(){
                     }
                 }
                 }
-            
-                for(int a= 0;a<attractPoints[cNum].size();a++){
-                    
-                    
-                    
-                    
-                    int x2 = attractPoints[cNum][a].x;
-                    int y2 = attractPoints[cNum][a].y;
-                    
-                    if(1/b2InvSqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2))<sNear){
-                        customParticles[i]->addRepulsionForce(attractPoints[cNum][a],b2dRepulsion);
-                        // customParticles[i]->setPosition(ofRandom(customParticles[i]->num*(RES_W/4), (customParticles[i]->num+1)*(RES_W/4)), -100);
+
+                if(!useInsidePoly){
+                    for(int a= 0;a<attractPoints[cNum].size();a++){
+                        int x2 = attractPoints[cNum][a].x;
+                        int y2 = attractPoints[cNum][a].y;
                         
+                        if(1/b2InvSqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2))<sNear){
+                            
+                            customParticles[i]->addRepulsionForce(attractPoints[cNum][a],b2dRepulsion);
+                            // customParticles[i]->setPosition(ofRandom(customParticles[i]->num*(RES_W/4), (customParticles[i]->num+1)*(RES_W/4)), -100);
+                            
+                        }
+                    }
+                }
+                if(useInsidePoly){
+                    for(int a= 0;a<blobs[cNum].size();a++){
+                        
+                        
+                        
+                        if(insidePolygon(customParticles[i]->getPosition(), blobs[cNum][a])){
+                            customParticles[i]->addRepulsionForce(blobs[cNum][a].getCentroid2D(),b2dRepulsion);
+                            // customParticles[i]->setPosition(ofRandom(customParticles[i]->num*(RES_W/4), (customParticles[i]->num+1)*(RES_W/4)), -100);
+                            
+                        }
                     }
                 }
                 
@@ -719,7 +734,13 @@ void ofApp::draw(){
 void ofApp::keyPressed(int key){
     if(key=='d')bDebug = !bDebug;
     if(key=='s')drawGui = !drawGui;
-    if(key=='l')soudoLine=!soudoLine;
+    if(key=='l'){soudoLine=!soudoLine;
+        if(!soudoLine){
+            blobs[0][0].clear();
+            blobs[0][1].clear();
+        }
+    }
+
     unsigned idx = key - '0';
     if (idx < post.size()) post[idx]->setEnabled(!post[idx]->getEnabled());
 

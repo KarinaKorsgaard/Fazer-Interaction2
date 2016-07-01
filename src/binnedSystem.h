@@ -25,7 +25,7 @@ public:
     float particleNeighborhood, particleRepulsion;
     float centerAttraction;
   
-    vector<ofPoint>* attractPoints;
+    vector< vector<ofPoint>>* attractPoints;
     int kBinnedParticles;
     BinnedParticleSystem particleSystem;
     bool bRepelFrom, slowMotion;

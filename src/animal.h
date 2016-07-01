@@ -53,11 +53,10 @@ public:
         h = still->getHeight();
         pos = _pos;
         
-//        if(pos.x<210)track=true;
+      // if(pos.x<210)track=true;
         oscAddress = _oscAddress;
         touched = false;
         attractPoints = _attractPoints;
-        still->play();
         radius = 150;
         vel = ofVec2f(ofRandom(-2,2), ofRandom(-0.5,0.5));
         if(vel.x<0.4)vel.x = 2;
@@ -86,6 +85,7 @@ public:
             moving->setFrame(0);
             bool contract = false;
             bool expand = false;
+            still->setPaused(true);
             
             if(track)cout<<"begin"<<endl;
         }
@@ -129,6 +129,7 @@ public:
                 expand = false;
                 beginSequence = false;
                 touched = false;
+                still->setPaused(false);
                 resetForContract=false;
                 if(track)cout<<"stop"<<endl;
             }
@@ -136,9 +137,11 @@ public:
     
         
         
-        if(!touched) still->update();
-        else moving->update();
-        
+//        if(!touched) still->update();
+//        else moving->update();
+                still->update();
+                moving->update();
+
         
         // move : borders:
         int lim =150;
@@ -151,12 +154,12 @@ public:
         }
         if( pos.y > RES_H-lim){
             pos.y = RES_H-lim;
-            vel.y = -ofRandom(3);
+            vel.y = -ofRandom(6);
         }
 
         
         pos+=vel;
-        vel.y+=0.03;
+        vel.y+=0.1;
     }
     
     void draw(){

@@ -34,7 +34,7 @@ public:
 //            setVelocity(vel);
 //            setPosition(RES_W,p.y);
         }
-        if(getPosition().y>RES_H){
+        if(getPosition().y>RES_H+50){
             addAttractionPoint(attractionPoint,3);
             // addAttractionPoint(RES_W/2,RES_H/2,2);
 //            setVelocity(vel);
@@ -47,15 +47,15 @@ public:
 //            setVelocity(vel);
 //            setPosition(0,p.y);
         }
-        if(getPosition().y<0){
+        if(getPosition().y<-50){
             addAttractionPoint(attractionPoint,3);
             // addAttractionPoint(RES_W/2,RES_H/2,2);
 //            setVelocity(vel);
 //            setPosition(p.x,0);
         }
        // addAttractionPoint(attractionPoint,0.5);
-        if(vel.length()<1)setVelocity(vel*2);
-        if(vel.length()>5)setVelocity(vel*0.5);
+        //if(vel.length()<1)setVelocity(vel*2);
+        //if(vel.length()>5)setVelocity(vel*0.5);
     }
 };
 
@@ -106,7 +106,7 @@ class ofApp : public ofBaseApp{
     ofParameter<int>resample;
     ofParameter<int>numAttractionP,attractionPointOverlap;
     ofParameter<int>overLap1,overLap2,overLap3,b2dRepulsion;
-    ofParameter<bool>swarm,cluster,evenColor,bUserParticles,bBox2d,simplify, drawAnimals,blend_ADD,blurImg,fluidcolor,oldApp;
+    ofParameter<bool>swarm,cluster,evenColor,bUserParticles,bBox2d,simplify, useInsidePoly,drawAnimals,blend_ADD,blurImg,fluidcolor,oldApp;
     ofParameter<ofColor>swarmColor;
     ofParameter<ofColor>clusterRange1;
     ofParameter<ofColor>clusterRange2;
