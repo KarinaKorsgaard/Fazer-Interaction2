@@ -47,30 +47,31 @@
 		<friction>0</friction>
 	<b2dRepulsion>20</b2dRepulsion>
 	<drawAnimals>1</drawAnimals>
+	<blurImg_cluster>1</blurImg_cluster>
 	</visuals>
 	<group>
 		<background>0, 0, 0, 255</background>
 		<swarm>255, 255, 255, 255</swarm>
-		<cluster_color>140, 93, 20, 255</cluster_color>
-	<swarmnBox2dColor>20, 140, 179, 255</swarmnBox2dColor>
+		<cluster_color>3, 93, 157, 255</cluster_color>
+	<swarmnBox2dColor>157, 3, 179, 255</swarmnBox2dColor>
 	<scale1>1.42347</scale1>
 		<numAttraction>44</numAttraction>
 		<one>
-			<offSet1X>-26.6972</offSet1X>
+			<offSet1X>2300.95</offSet1X>
 			<offSet1Y>0</offSet1Y>
 		</one>
 		<two>
-			<offSet2X>0</offSet2X>
+			<offSet2X>1683.42</offSet2X>
 			<offSet2Y>0</offSet2Y>
 			<overLap1>0</overLap1>
 		</two>
 		<three>
-			<offSet3X>0</offSet3X>
+			<offSet3X>960.033</offSet3X>
 			<offSet3Y>0</offSet3Y>
 			<overLap2>0</overLap2>
 		</three>
 		<four>
-			<offSet4X>0</offSet4X>
+			<offSet4X>77.8484</offSet4X>
 			<offSet4Y>0</offSet4Y>
 			<overLap3>0</overLap3>
 		</four>
