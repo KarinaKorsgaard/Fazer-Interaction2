@@ -14,7 +14,7 @@
 
 
 // not implemented
-#define SWARM_NUM 600
+#define SWARM_NUM 400
 #define PERLIN_NUM 100
-#define CLUSTER_NUM 35
+#define CLUSTER_NUM 25
 #define SPAWN_NUM 1

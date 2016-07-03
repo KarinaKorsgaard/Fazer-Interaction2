@@ -19,6 +19,7 @@ public:
     int age=0;
     float radius;
     int num;
+    //ofColor col;
     ofVec2f attractionPoint;
     CustomParticle() {
         radius = getRadius();
@@ -28,36 +29,38 @@ public:
         ofVec2f vel= getVelocity();
         ofVec2f p= getPosition();
       //  addAttractionPoint(RES_W/2,RES_H/2,2);
-        if(getPosition().x>(num+1)*(RES_W/4)){
+        if(p.x>(num+1)*(RES_W/4)){
             addAttractionPoint(attractionPoint,3);
            // addAttractionPoint(RES_W/2,RES_H/2,2);
 //            setVelocity(vel);
 //            setPosition(RES_W,p.y);
         }
-        if(getPosition().y>RES_H){
-            setVelocity(-1*vel);
+        if(p.y>RES_H){
+           // setVelocity(-1*vel);
             addAttractionPoint(attractionPoint,3);
             // addAttractionPoint(RES_W/2,RES_H/2,2);
 //            setVelocity(vel);
 //            setPosition(p.x,RES_H);
         }
         
-        if(getPosition().x<num*(RES_W/4)){
+        if(p.x<num*(RES_W/4)){
             addAttractionPoint(attractionPoint,3);
             // addAttractionPoint(RES_W/2,RES_H/2,2);
 //            setVelocity(vel);
 //            setPosition(0,p.y);
         }
-        if(getPosition().y<-50){
+        if(p.y<-50){
             addAttractionPoint(attractionPoint,3);
             // addAttractionPoint(RES_W/2,RES_H/2,2);
 //            setVelocity(vel);
 //            setPosition(p.x,0);
         }
-       // addAttractionPoint(attractionPoint,0.5);
+     //   if(ofRandom(1)<0.001)addRepulsionForce(attractionPoint,0.1);
         //if(vel.length()<1)setVelocity(vel*2);
-        if(vel.length()>5)setVelocity(vel*0.5);
+        if(vel.length()>5)setVelocity(vel.getNormalized()*2);
     }
+    
+
 };
 
 struct soundParticle{

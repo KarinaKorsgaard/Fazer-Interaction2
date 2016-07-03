@@ -27,52 +27,53 @@
 	</offsetControl>
 	<visuals>
 		<swarm>1</swarm>
-		<clusters>1</clusters>
+		<clusters>0</clusters>
 		<perlin>0</perlin>
 		<bBox2d>1</bBox2d>
 		<b2bBounce>0.5</b2bBounce>
 		<drawVideoLoops>0</drawVideoLoops>
 	<cAttraction>0.0306122</cAttraction>
 		<pRepulsion>0.0561224</pRepulsion>
-	<blend_ADD>0</blend_ADD>
+	<blend_ADD>1</blend_ADD>
 		<fluidcolor>1</fluidcolor>
 		<blurImg>0</blurImg>
-		<sNear>63.949</sNear>
+		<sNear>41.6122</sNear>
 		<sFar>0</sFar>
 	<evenSizes>0</evenSizes>
 		<all_same_color>0</all_same_color>
-		<uniform_Color_cluster>0</uniform_Color_cluster>
+		<uniform_Color_cluster>1</uniform_Color_cluster>
 		<density>0</density>
 		<bounce>0</bounce>
 		<friction>0</friction>
-	<b2dRepulsion>20</b2dRepulsion>
-	<drawAnimals>1</drawAnimals>
-	<blurImg_cluster>0</blurImg_cluster>
+	<b2dRepulsion>39</b2dRepulsion>
+	<drawAnimals>0</drawAnimals>
+	<blurImg_cluster>1</blurImg_cluster>
+	<uniform_Color_swarm>0</uniform_Color_swarm>
 	</visuals>
 	<group>
 		<background>0, 0, 0, 255</background>
 		<swarm>255, 255, 255, 255</swarm>
-		<cluster_color>57, 93, 103, 255</cluster_color>
-	<swarmnBox2dColor>103, 57, 179, 255</swarmnBox2dColor>
-	<scale1>1.42347</scale1>
-		<numAttraction>44</numAttraction>
+		<cluster_color>83, 33, 4, 255</cluster_color>
+	<swarmnBox2dColor>255, 102, 119, 255</swarmnBox2dColor>
+	<scale1>1.91327</scale1>
+		<numAttraction>35</numAttraction>
 		<one>
-			<offSet1X>2300.95</offSet1X>
-			<offSet1Y>0</offSet1Y>
+			<offSet1X>-100</offSet1X>
+			<offSet1Y>-500</offSet1Y>
 		</one>
 		<two>
-			<offSet2X>1683.42</offSet2X>
-			<offSet2Y>0</offSet2Y>
+			<offSet2X>871.815</offSet2X>
+			<offSet2Y>-500</offSet2Y>
 			<overLap1>0</overLap1>
 		</two>
 		<three>
-			<offSet3X>960.033</offSet3X>
-			<offSet3Y>0</offSet3Y>
+			<offSet3X>3112.56</offSet3X>
+			<offSet3Y>-473.553</offSet3Y>
 			<overLap2>0</overLap2>
 		</three>
 		<four>
-			<offSet4X>77.8484</offSet4X>
-			<offSet4Y>0</offSet4Y>
+			<offSet4X>3289</offSet4X>
+			<offSet4Y>-500</offSet4Y>
 			<overLap3>0</overLap3>
 		</four>
 	<useInsidePoly>0</useInsidePoly>

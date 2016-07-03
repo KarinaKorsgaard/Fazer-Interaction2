@@ -3,10 +3,12 @@ uniform float evenColor;
 uniform float addthis;
 void main() {
 
-    gl_Position   = gl_ModelViewProjectionMatrix * gl_Vertex;
-    gl_PointSize   = gl_Vertex.z * addthis/1.1;
-	
     
+    
+    gl_PointSize   = gl_Vertex.z  ;
+   // gl_Vertex.z=1.;
+    gl_Position   = gl_ModelViewProjectionMatrix * gl_Vertex;
+    gl_Position +=0.;
     //float alpha   = gl_Normal.y;
     
    // gl_PointSize  = gl_Vertex.z*2.;

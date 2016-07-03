@@ -54,7 +54,7 @@ void ofApp::setup(){
     visualControl.add(oldApp.set("evenSizes", true));
     visualControl.add(fluidcolor.set("all same color", true));
     visualControl.add(blurImg.set("blurImg", true));
-    visualControl.add(evenColor.set("uniform Color cluster", true));
+    visualControl.add(evenColor.set("uniform Color swarm", true));
     
     visualControl.add(blurImg1.set("blurImg cluster", true));
     visualControl.add(evenColor1.set("uniform Color cluster", true));
@@ -147,7 +147,7 @@ void ofApp::setup(){
     }
     cout << fazerColors.size()<<endl;
 
-
+    ofSetCircleResolution(100);
     box2d.init();
     box2d.setGravity(0, 0);
     box2d.createGround(0, RES_H, RES_W, RES_H);
@@ -163,16 +163,16 @@ void ofApp::setup(){
         fours = (i*4) / num;
         customParticles.push_back(shared_ptr<CustomParticle>(new CustomParticle));
         CustomParticle * p = customParticles.back().get();
-        float r = ofRandom(10, 65);		// a random radius 4px - 20px
-        r = ofRandom(10,r);
+        float r = ofRandom(8, 65);		// a random radius 4px - 20px
+        r = ofRandom(8,r);
         //float density, float bounce, float friction
-        p->setPhysics(ofRandom(0.1,10), ofRandom(0.1,1.2) ,ofRandom(0.1,3));
+        p->setPhysics(ofRandom(0.1,5), ofRandom(0.1,0.5) ,0);
         p->setup(box2d.getWorld(), ofRandom((fours-1)*RES_W/4,fours*RES_W/4), ofRandom(100,RES_H-100), r);
         p->radius=p->getRadius();
         p->setVelocity(ofRandom(-0.5,0.5), ofRandom(-0.5,0.5));
         p->attractionPoint = ofVec2f(fours*RES_W/4 +RES_W/8, RES_H/2);
         p->num =fours;
-        pointSizes.push_back(r);
+        ///pointSizes.push_back(r);
         
         colorMesh.addVertex(ofVec3f(fazerColors[cIndx].r,fazerColors[cIndx].g,fazerColors[cIndx].b));
         cIndx = i%fazerColors.size();
@@ -231,6 +231,7 @@ void ofApp::setup(){
     drawGui = true;
     bDebug = true;
     attractPoints.resize(4);
+    
     syphon.setName("FazerParticles");
    // ofSetFrameRate(30);
     ofSetVerticalSync(true);
@@ -275,7 +276,7 @@ void ofApp::update(){
                     for(int  i = 0 ; i< msg.getNumArgs();i+=2){
                         
                         ofVec2f pt;
-                        pt.x= (RES_W-msg.getArgAsFloat(i)*scaleList[r]) + ofsetlistX[r];
+                        pt.x= RES_W-((msg.getArgAsFloat(i)*scaleList[r]) + ofsetlistX[r]);
                         pt.y= msg.getArgAsFloat(i+1)*scaleList[r] + ofsetlistY[r];;
                         blobs[r][pointCloudIndx].addVertex(pt);
                         
@@ -345,11 +346,12 @@ void ofApp::update(){
                 attractPoints[i].push_back(p.getCentroid2D());
                 for( int pt = 0; pt < p.getVertices().size(); pt++) {
                     int x = p.getVertices().at(pt).x;
+                    if(x>0&&x<RES_W){
                     int aNum = int(ofMap(x, 0, RES_W, 0, 4));
                    
                    // if(x>overLaps[i]+ofsetlistX[i])
                         attractPoints[aNum].push_back(p.getVertices().at(pt));
-                    
+                    }
                 }
             }
         }
@@ -413,7 +415,7 @@ void ofApp::update(){
     
     if(swarm){
         for(int i = 0; i<customParticles.size();i++){
-            int cNum =customParticles[i]->num;
+          //  int cNum =customParticles[i]->num;
             int x1 = customParticles[i]->getPosition().x;
             int y1 = customParticles[i]->getPosition().y;
             
@@ -431,14 +433,15 @@ void ofApp::update(){
                 }
             }
             
-            for(int a= 0;a<attractPoints[cNum].size();a++){
+            for(int cNum= 0;cNum<attractPoints.size();cNum++){
+                for(int a= 0;a<attractPoints[cNum].size();a++){
                 int x2 = attractPoints[cNum][a].x;
                 int y2 = attractPoints[cNum][a].y;
                 
                 if(1/b2InvSqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2))<sNear){
-                    
+       
                     customParticles[i]->addRepulsionForce(attractPoints[cNum][a],b2dRepulsion);
-
+                }
                 }
             }
         }
@@ -447,15 +450,16 @@ void ofApp::update(){
         mesh.clear();
         for(unsigned int i = 0; i < customParticles.size(); i++){
             customParticles[i]->update();
-            mesh.addVertex(ofVec3f(float(customParticles[i]->getPosition().x),float(customParticles[i]->getPosition().y),pointSizes[i]));
+            int ra=0;
+            mesh.addVertex(ofVec3f(float(customParticles[i]->getPosition().x+ra),float(customParticles[i]->getPosition().y+ra),customParticles[i]->getRadius()));
         }
         vbo.setVertexData(&mesh.getVertices()[0], SWARM_NUM, GL_STATIC_DRAW);
     }
 
     if(cluster){
-        int red = ((sin(ofGetElapsedTimef()/10))+1) * 160/2;
-        clusterRange2.set(ofColor(red,clusterRange2->g,160-red));
-        swarmColor.set(ofColor(160-red,red,swarmColor->b));
+        //int red = ((sin(ofGetElapsedTimef()/10))+1) * 160/2;
+        //clusterRange2.set(ofColor(red,clusterRange2->g,160-red));
+        //swarmColor.set(ofColor(160-red,red,swarmColor->b));
         
         for(int i = 0 ; i< clusters.size();i++){
             clusters[i].update();
@@ -474,6 +478,11 @@ void ofApp::update(){
         ofEnableAlphaBlending();
         if(drawAnimals)for(auto a: animals)a.draw();
         
+        ofSetColor(255);
+        for(int i = 0; i< customParticles.size();i++){
+            ofSetColor(fazerColors[i%fazerColors.size()]);
+            ofDrawCircle(customParticles[i]->getPosition(),customParticles[i]->getRadius());
+        }
         glDepthMask(GL_FALSE);
         ofEnablePointSprites();
         
@@ -505,59 +514,62 @@ void ofApp::update(){
             }
         }
         pointSpline.end();
-//        glDepthMask(GL_TRUE);
-//    
+////        glDepthMask(GL_TRUE);
+////
 //        ofDisableBlendMode();
-//        ofEnableAlphaBlending();
+//       ofEnableAlphaBlending();
+////
+////        ofDisablePointSprites();
+//        
+// //       ofEnablePointSprites();
+//   //     glDepthMask(GL_FALSE);
 //
-//        ofDisablePointSprites();
-        
- //       ofEnablePointSprites();
-   //     glDepthMask(GL_FALSE);
-
-        
-        pointSpline.begin();
-        if(swarm){
-            if(evenColor)pointSpline.setUniform1f("evenColor", 1.);
-            else pointSpline.setUniform1f("evenColor", 0.);
-            
-            if(blurImg)pointSpline.setUniform1f("addthis", 7.5);
-            else pointSpline.setUniform1f("addthis", 2.2);
-            
-            int cIndex = 0;
-            // bind the texture so that when all the points
-            // are drawn they are replace with our dot image
-            // pointSpline.setUniform3f("col", float(swarmColor->r), float(swarmColor->g), float(swarmColor->b));
-            // if(!evenColor)pointSpline.setUniform3f("col", float(fazerColors[cIndex].r), float(fazerColors[cIndex].g), float(fazerColors[cIndex].b));
-            
-            if(!fluidcolor)pointSpline.setUniform3f("col", float(swarmColor->r), float(swarmColor->g), float(swarmColor->b));
-            if(fluidcolor)pointSpline.setUniform3f("col", float(clusterRange2->r), float(clusterRange2->g), float(clusterRange2->b));
-            
-            if(!blurImg) solid.bind();
-            else sparkImg.bind();
-            vbo.draw(GL_POINTS, 0, (int)SWARM_NUM);
-            if(!blurImg) solid.unbind();
-            else sparkImg.unbind();
-            
-        }
-        
-        pointSpline.end();
-        
-        glDepthMask(GL_TRUE);
-        
+//        
+//        pointSpline.begin();
+//        if(swarm){
+//            if(evenColor)pointSpline.setUniform1f("evenColor", 1.);
+//            else pointSpline.setUniform1f("evenColor", 0.);
+//            
+//            if(blurImg)pointSpline.setUniform1f("addthis", 7.5);
+//            else pointSpline.setUniform1f("addthis", 2.2);
+//            
+//            int cIndex = 0;
+//            // bind the texture so that when all the points
+//            // are drawn they are replace with our dot image
+//            // pointSpline.setUniform3f("col", float(swarmColor->r), float(swarmColor->g), float(swarmColor->b));
+//            // if(!evenColor)pointSpline.setUniform3f("col", float(fazerColors[cIndex].r), float(fazerColors[cIndex].g), float(fazerColors[cIndex].b));
+//            
+//            if(!fluidcolor)pointSpline.setUniform3f("col", float(swarmColor->r), float(swarmColor->g), float(swarmColor->b));
+//            if(fluidcolor)pointSpline.setUniform3f("col", float(clusterRange2->r), float(clusterRange2->g), float(clusterRange2->b));
+//            
+//            if(!blurImg) solid.bind();
+//            else sparkImg.bind();
+//            vbo.draw(GL_POINTS, 0, (int)SWARM_NUM);
+//            if(!blurImg) solid.unbind();
+//            else sparkImg.unbind();
+//            
+//        }
+//        
+//        pointSpline.end();
+//        
+//        glDepthMask(GL_TRUE);
+//        
         pointSplineFbo.end();
-    
+        
+        
         ofDisablePointSprites();
         ofDisableBlendMode();
         ofDisableAlphaBlending();
+        
+
+
     }
 
     // final render
     finalRender.begin();
   //  post.begin();
-    ofSetColor(255);
     ofClear(0);
-    
+    ofSetColor(255);
     ofEnableAlphaBlending();
 
   //  ofBackgroundGradient(clusterRange1,clusterRange2, OF_GRADIENT_LINEAR);
@@ -566,12 +578,14 @@ void ofApp::update(){
 
   //  textureFbo.begin();
   //  ofClear(0);
+    if(cluster||swarm||drawAnimals){
     ofSetColor(255);
     textureShader.begin();
     textureShader.setUniformTexture("tex0", texture, 0);
     textureShader.setUniformTexture("tex1", pointSplineFbo.getTexture(), 1);
     pointSplineFbo.draw(0,0);
     textureShader.end();
+    }
   //  textureFbo.end();
     
     
@@ -608,8 +622,12 @@ void ofApp::update(){
 
         for(int i=0; i<attractPoints.size(); i++) {
             for(int u=0; u<attractPoints[i].size(); u++) {
-                ofSetColor(i*(255/4), 255-i*(255/4), i*(255/4));
-                ofDrawCircle(attractPoints[i][u],5);
+                if(attractPoints[i][u].x<RES_W-10 && attractPoints[i][u].x > 10){
+                    if(attractPoints[i][u].y<RES_H-10 && attractPoints[i][u].x > 10){
+                        ofSetColor(255,0,0);
+                        ofDrawCircle(attractPoints[i][u],5);
+                    }
+                }
             }
         }
         
@@ -635,10 +653,10 @@ void ofApp::update(){
   //  post.end();
     finalRender.end();
     
+    ofFill();
 
-
-    syphon.publishTexture(&finalRender.getTexture());
-    
+    if(finalRender.isAllocated())syphon.publishTexture(&finalRender.getTexture());
+  //  syphon.publishTexture(<#GLuint id#>, <#GLenum target#>, <#GLsizei width#>, <#GLsizei height#>, <#bool isFlipped#>)
 }
 
 
@@ -646,7 +664,7 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
     
-    ofSetWindowTitle(ofToString(ofGetFrameRate()));
+    ofSetWindowTitle(ofToString(ofGetFrameRate(),0));
 
     if( drawGui )
     {
