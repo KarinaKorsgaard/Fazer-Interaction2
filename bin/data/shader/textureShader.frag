@@ -14,7 +14,7 @@ void main () {
     //col.b=0.2;
    // col+= texture2DRect(tex0, gl_TexCoord[0].xy).r;
 //    
-    float noise = (texture2D(tex0, uv * iResolution.x / 256.).r - 0.5) * .15;
+    float noise = (texture2D(tex0, uv * iResolution.x / 256.).r - 0.5) * .015;
     col +=noise;
 
     

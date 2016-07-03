@@ -55,6 +55,10 @@ void ofApp::setup(){
     visualControl.add(fluidcolor.set("all same color", true));
     visualControl.add(blurImg.set("blurImg", true));
     visualControl.add(evenColor.set("uniform Color cluster", true));
+    
+    visualControl.add(blurImg1.set("blurImg cluster", true));
+    visualControl.add(evenColor1.set("uniform Color cluster", true));
+    
     visualControl.add(sNear.set("sNear",0,1,200));
     visualControl.add(sFar.set("sFar",0,1,200));
     visualControl.add(b2dRepulsion.set("b2dRepulsion",0,1,200));
@@ -471,13 +475,19 @@ void ofApp::update(){
             for(int i = 0 ; i< clusters.size();i++){
                 cIndex = i%fazerColors.size();
             
-                pointSpline.setUniform1f("evenColor", 1.);
-                pointSpline.setUniform1f("addthis", 7.5);
-                pointSpline.setUniform3f("col", float(clusterRange2->r+clusters[i].r), float(clusterRange2->g+clusters[i].g), float(clusterRange2->b+clusters[i].b));
+                if(evenColor1)pointSpline.setUniform1f("evenColor", 1.);
+                else pointSpline.setUniform1f("evenColor", 0.);
                 
-                sparkImg.bind();
+                if(blurImg1)pointSpline.setUniform1f("addthis", 7.5);
+                else pointSpline.setUniform1f("addthis", 2.2);
+                
+                if(fluidcolor)pointSpline.setUniform3f("col", float(clusterRange2->r+clusters[i].r), float(clusterRange2->g+clusters[i].g), float(clusterRange2->b+clusters[i].b));
+                
+                if(blurImg1)sparkImg.bind();
+                else solid.bind();
                 clusters[i].vbo.draw(GL_POINTS, 0, (int)clusters[i].particleSystem.size());
-                sparkImg.unbind();
+                if(blurImg1)sparkImg.unbind();
+                else solid.unbind();
                 
                 
             }

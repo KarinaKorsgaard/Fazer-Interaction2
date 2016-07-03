@@ -107,7 +107,7 @@ class ofApp : public ofBaseApp{
     ofParameter<int>resample;
     ofParameter<int>numAttractionP,attractionPointOverlap;
     ofParameter<int>overLap1,overLap2,overLap3,b2dRepulsion;
-    ofParameter<bool>swarm,cluster,evenColor,bUserParticles,bBox2d,simplify, useInsidePoly,drawAnimals,blend_ADD,blurImg,fluidcolor,oldApp;
+    ofParameter<bool>swarm,cluster,evenColor,bUserParticles,bBox2d,simplify, useInsidePoly,drawAnimals,blend_ADD,blurImg,fluidcolor,oldApp,blurImg1,evenColor1;
     ofParameter<ofColor>swarmColor;
     ofParameter<ofColor>clusterRange1;
     ofParameter<ofColor>clusterRange2;
