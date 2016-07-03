@@ -15,23 +15,23 @@ void ofApp::setup(){
     three.setName("three");
     four.setName("four");
     
-    one.add(offSet1X.set("offSet1X",0,-100,900));
+    one.add(offSet1X.set("offSet1X",0,-100,RES_W));
     one.add(offSet1Y.set("offSet1Y",0,-500,500));
     
     // this overlap is always 0.
-    two.add(offSet2X.set("offSet2X",0,700,1700));
+    two.add(offSet2X.set("offSet2X",0,-100,RES_W));
     two.add(offSet2Y.set("offSet2Y",0,-500,500));
    // two.add(scale2.set("scale2",0,3,0));
     
     two.add(overLap1.set("overLap1",0,-700,700));
    
-    three.add(offSet3X.set("offSet3X",0,1500,2500));
+    three.add(offSet3X.set("offSet3X",0,-100,RES_W));
     three.add(offSet3Y.set("offSet3Y",0,-500,500));
   //  three.add(scale3.set("scale3",0,3,0));
     
     three.add(overLap2.set("overLap2",0,-700,700));
     
-    four.add(offSet4X.set("offSet4X",0,2300,3300));
+    four.add(offSet4X.set("offSet4X",0,-100,RES_W));
     four.add(offSet4Y.set("offSet4Y",0,-500,500));
    // four.add(scale4.set("scale4",0,3,0));
     
@@ -275,7 +275,7 @@ void ofApp::update(){
                     for(int  i = 0 ; i< msg.getNumArgs();i+=2){
                         
                         ofVec2f pt;
-                        pt.x= msg.getArgAsFloat(i)*scaleList[r] + ofsetlistX[r];
+                        pt.x= (RES_W-msg.getArgAsFloat(i)*scaleList[r]) + ofsetlistX[r];
                         pt.y= msg.getArgAsFloat(i+1)*scaleList[r] + ofsetlistY[r];;
                         blobs[r][pointCloudIndx].addVertex(pt);
                         
@@ -292,7 +292,9 @@ void ofApp::update(){
    // add random blob
     if(soudoLine){
         blobs[0][0].clear();
-        blobs[0][1].clear();
+        blobs[1][0].clear();
+        blobs[2][0].clear();
+        blobs[3][0].clear();
         //testPoly
         ofPolyline line;
         float i = 0;
@@ -317,8 +319,12 @@ void ofApp::update(){
         }
         
         line2.close(); // close the shape
+        
         blobs[0][0]=line.getResampledBySpacing(numAttractionP);
-        blobs[1][0]=line2.getResampledBySpacing(numAttractionP);
+        blobs[1][0]=line.getResampledBySpacing(numAttractionP);
+        blobs[2][0]=line.getResampledBySpacing(numAttractionP);
+        blobs[3][0]=line.getResampledBySpacing(numAttractionP);
+
     }
 
 
@@ -341,7 +347,8 @@ void ofApp::update(){
                     int x = p.getVertices().at(pt).x;
                     int aNum = int(ofMap(x, 0, RES_W, 0, 4));
                    
-                    if(x>overLaps[i]+ofsetlistX[i])attractPoints[aNum].push_back(p.getVertices().at(pt));
+                   // if(x>overLaps[i]+ofsetlistX[i])
+                        attractPoints[aNum].push_back(p.getVertices().at(pt));
                     
                 }
             }
@@ -464,10 +471,15 @@ void ofApp::update(){
     if(cluster||swarm||bBox2d){
         pointSplineFbo.begin();
         ofClear(0, 0);
+        ofEnableAlphaBlending();
+        if(drawAnimals)for(auto a: animals)a.draw();
+        
         glDepthMask(GL_FALSE);
         ofEnablePointSprites();
-        ofEnableAlphaBlending();
-        ofEnableBlendMode(OF_BLENDMODE_ADD);
+        
+        if(blend_ADD){
+            ofEnableBlendMode(OF_BLENDMODE_ADD);
+        }
         
         pointSpline.begin();
         if(cluster){
@@ -493,18 +505,16 @@ void ofApp::update(){
             }
         }
         pointSpline.end();
-        glDepthMask(GL_TRUE);
-    
-        ofDisableBlendMode();
-        ofEnableAlphaBlending();
+//        glDepthMask(GL_TRUE);
+//    
+//        ofDisableBlendMode();
+//        ofEnableAlphaBlending();
+//
+//        ofDisablePointSprites();
+        
+ //       ofEnablePointSprites();
+   //     glDepthMask(GL_FALSE);
 
-        ofDisablePointSprites();
-        if(drawAnimals)for(auto a: animals)a.draw();
-        ofEnablePointSprites();
-        glDepthMask(GL_FALSE);
-        if(blend_ADD){
-            ofEnableBlendMode(OF_BLENDMODE_ADD);
-        }
         
         pointSpline.begin();
         if(swarm){

@@ -44,7 +44,10 @@ public:
         moving = new ofVideoPlayer;
         still->load(_still);
         moving->load(_moving);
-        
+       // w = still->getWidth();
+       // h = still->getHeight();
+       // still->resize(w/4,h/4);
+       // moving->resize(w/4,h/4);
         
         
         still->setLoopState(OF_LOOP_NORMAL);
