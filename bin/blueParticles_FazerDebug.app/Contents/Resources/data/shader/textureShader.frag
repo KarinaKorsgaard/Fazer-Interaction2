@@ -1,29 +1,29 @@
 
-////uniform sampler2D tex;
-//uniform vec2 iResolution;
-//uniform sampler2D tex0;
-//uniform sampler2DRect tex1;
-//
-//void main () {
+//uniform sampler2D tex;
+uniform vec2 iResolution;
+uniform sampler2D tex0;
+uniform sampler2DRect tex1;
+
+void main () {
+    
+    
+    
+    vec2 uv = gl_FragCoord.xy / iResolution.x;
+   
+    vec4 col = texture2DRect(tex1, gl_TexCoord[0].xy);
+    //col.b=0.2;
+   // col+= texture2DRect(tex0, gl_TexCoord[0].xy).r;
 //    
-//    
-//    
-//    vec2 uv = gl_FragCoord.xy / iResolution.x;
-//   
-//    vec4 col = texture2DRect(tex1, gl_TexCoord[0].xy);
-//   // col.b=0.5;
-//   // col+= texture2DRect(tex0, gl_TexCoord[0].xy).r;
-////    
-//    float noise = (texture2D(tex0, uv * iResolution.x / 256.).r - 0.5) * 0.05;
-//    col +=noise;
-//
-//    
-////    col += rTxt.r * 100.5;
-////   // col+=rTxt;
-//    gl_FragColor = col;
-//   // gl_FragColor = texture2D(tex, gl_TexCoord[0].st) * gl_Color;
-//    
-//}
+    float noise = (texture2D(tex0, uv * iResolution.x / 256.).r - 0.5) * .15;
+    col +=noise;
+
+    
+//    col += rTxt.r * 100.5;
+//   // col+=rTxt;
+    gl_FragColor = col;
+   // gl_FragColor = texture2D(tex, gl_TexCoord[0].st) * gl_Color;
+    
+}
 
 //uniform vec2 iResolution;
 //uniform sampler2DRect tex1;
@@ -82,18 +82,18 @@
 //    }
 //}
 
-uniform vec2 u_resolution;
-uniform float scanline;
-uniform sampler2D tex;
-
-
-void main()
-{
-    vec2 uv = gl_FragCoord.xy / u_resolution.xy;
-    
-    float lod = (5.0 + 5.0*sin( scanline ))*step( uv.x, 0.5 );
-    
-    vec3 col = texture2D( tex, vec2(uv.x,1.0-uv.y), lod ).xyz;
-    
-    gl_FragColor = vec4( col, 1.0 );
-}
+//uniform vec2 u_resolution;
+//uniform float scanline;
+//uniform sampler2D tex;
+//
+//
+//void main()
+//{
+//    vec2 uv = gl_FragCoord.xy / u_resolution.xy;
+//    
+//    float lod = (5.0 + 5.0*sin( scanline ))*step( uv.x, 0.5 );
+//    
+//    vec3 col = texture2D( tex, vec2(uv.x,1.0-uv.y), lod ).xyz;
+//    
+//    gl_FragColor = vec4( col, 1.0 );
+//}

@@ -104,6 +104,11 @@ void ofApp::setup(){
     ofClear(0);
     finalRender.end();
     
+    textureFbo.allocate(RES_W,RES_H);
+    textureFbo.begin();
+    ofClear(0);
+    textureFbo.end();
+    
 
     sparkImg.allocate(128,128, GL_RGBA);
     ofDisableArbTex();
@@ -114,6 +119,17 @@ void ofApp::setup(){
     ofDisableArbTex();
     ofLoadImage(solid, "clear.png");
     ofEnableArbTex();
+    
+    texture.allocate(128,128, GL_RGBA);
+    ofDisableArbTex();
+    ofLoadImage(texture, "texture.png");
+    ofEnableArbTex();
+    texture.setTextureWrap(GL_REPEAT, GL_REPEAT);
+    
+    textureShader.load("shader/textureShader");
+    textureShader.begin();
+    textureShader.setUniform2f("iResolution", RES_W, RES_H);
+    textureShader.end();
     
     pointSpline.load("shader/shader");
  
@@ -374,9 +390,11 @@ void ofApp::update(){
                 soundSender.sendMessage(m);
             }
             for(int u = i+1; u<animals.size();u++){
-                if(abs(animals[u].pos.x-animals[i].pos.x )<50){
-                    animals[u].vel.x *=-1;
-                    animals[i].vel.x *=-1;
+                if(abs(animals[u].pos.x-animals[i].pos.x )<280){
+                    ofVec2f v = animals[u].vel;
+                    animals[u].vel = animals[i].vel;
+                    animals[i].vel = v;
+                   // animals[i].vel.x *=-1;
                 }
             }
         }
@@ -395,8 +413,8 @@ void ofApp::update(){
                         int x2 = animals[u].pos.x ;
                         int y2 = animals[u].pos.y ;
                         
-                        if(1/b2InvSqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2))<150){
-                            customParticles[i]->addRepulsionForce(animals[u].pos ,b2dRepulsion);
+                        if(1/b2InvSqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2))<200){
+                            customParticles[i]->addRepulsionForce(animals[u].pos ,b2dRepulsion*2);
                         }
                     }
                 }
@@ -425,7 +443,9 @@ void ofApp::update(){
 
     if(cluster){
         int red = ((sin(ofGetElapsedTimef()/10))+1) * 160/2;
-        clusterRange2.set(ofColor(red,clusterRange2->g,255-red));
+        clusterRange2.set(ofColor(red,clusterRange2->g,160-red));
+        swarmColor.set(ofColor(160-red,red,swarmColor->b));
+        
         for(int i = 0 ; i< clusters.size();i++){
             clusters[i].update();
             clusters[i].oldApp = oldApp;
@@ -462,10 +482,21 @@ void ofApp::update(){
                 
             }
         }
-        if(!blend_ADD){
-            ofDisableBlendMode();
-            ofEnableAlphaBlending();
+        pointSpline.end();
+        glDepthMask(GL_TRUE);
+    
+        ofDisableBlendMode();
+        ofEnableAlphaBlending();
+
+        ofDisablePointSprites();
+        if(drawAnimals)for(auto a: animals)a.draw();
+        ofEnablePointSprites();
+        glDepthMask(GL_FALSE);
+        if(blend_ADD){
+            ofEnableBlendMode(OF_BLENDMODE_ADD);
         }
+        
+        pointSpline.begin();
         if(swarm){
             if(evenColor)pointSpline.setUniform1f("evenColor", 1.);
             else pointSpline.setUniform1f("evenColor", 0.);
@@ -501,8 +532,6 @@ void ofApp::update(){
         ofDisableAlphaBlending();
     }
 
-    
-    
     // final render
     finalRender.begin();
   //  post.begin();
@@ -515,15 +544,24 @@ void ofApp::update(){
     
     
 
-    
-    
+  //  textureFbo.begin();
+  //  ofClear(0);
     ofSetColor(255);
-    if(cluster||swarm){
-        pointSplineFbo.draw(0,0);
-    }
+    textureShader.begin();
+    textureShader.setUniformTexture("tex0", texture, 0);
+    textureShader.setUniformTexture("tex1", pointSplineFbo.getTexture(), 1);
+    pointSplineFbo.draw(0,0);
+    textureShader.end();
+  //  textureFbo.end();
+    
+    
+//    ofSetColor(255);
+//    if(cluster||swarm){
+//        pointSplineFbo.draw(0,0);
+//    }
     
 
-   if(drawAnimals)for(auto a: animals)a.draw();
+   
 
     
     
@@ -576,6 +614,8 @@ void ofApp::update(){
     }
   //  post.end();
     finalRender.end();
+    
+
 
     syphon.publishTexture(&finalRender.getTexture());
     

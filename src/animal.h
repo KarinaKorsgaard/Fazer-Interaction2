@@ -72,7 +72,7 @@ public:
         for(int i = 0 ; i<attractPoints->at(region).size();i++){
             if(!isOn){
                 ofPoint p = attractPoints->at(region)[i];
-                if(dist(pos,p)<120){
+                if(dist(pos,p)<50){
                     isOn = true;
                 }
             }

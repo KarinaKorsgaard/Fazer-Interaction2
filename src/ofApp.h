@@ -34,7 +34,8 @@ public:
 //            setVelocity(vel);
 //            setPosition(RES_W,p.y);
         }
-        if(getPosition().y>RES_H+50){
+        if(getPosition().y>RES_H){
+            setVelocity(-1*vel);
             addAttractionPoint(attractionPoint,3);
             // addAttractionPoint(RES_W/2,RES_H/2,2);
 //            setVelocity(vel);
@@ -131,7 +132,10 @@ class ofApp : public ofBaseApp{
     ofTexture sparkImg;
     ofTexture solid;
     ofTexture dot;
+    ofTexture texture;
     ofxAutoReloadedShader pointSpline;
+    ofFbo textureFbo;
+    ofxAutoReloadedShader textureShader;
     
     //box 2 d;
     ofxBox2d                             box2d;

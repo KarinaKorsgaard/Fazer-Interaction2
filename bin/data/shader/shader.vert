@@ -16,7 +16,7 @@ void main() {
         col =gl_Color*vec4(vec3(1.),0.5);
     }else{
         vec3 c = gl_Normal / 255.;
-        col =gl_Color*vec4(vec3(c),10.);
+        col =gl_Color*vec4(vec3(c),1.0);
     }
     
   

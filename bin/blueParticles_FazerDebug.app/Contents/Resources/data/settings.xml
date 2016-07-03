@@ -27,7 +27,7 @@
 	</offsetControl>
 	<visuals>
 		<swarm>1</swarm>
-		<clusters>0</clusters>
+		<clusters>1</clusters>
 		<perlin>0</perlin>
 		<bBox2d>1</bBox2d>
 		<b2bBounce>0.5</b2bBounce>
@@ -36,27 +36,27 @@
 		<pRepulsion>0.0561224</pRepulsion>
 	<blend_ADD>1</blend_ADD>
 		<fluidcolor>1</fluidcolor>
-		<blurImg>1</blurImg>
+		<blurImg>0</blurImg>
 		<sNear>63.949</sNear>
 		<sFar>0</sFar>
 	<evenSizes>0</evenSizes>
-		<all_same_color>1</all_same_color>
+		<all_same_color>0</all_same_color>
 		<uniform_Color_cluster>1</uniform_Color_cluster>
 		<density>0</density>
 		<bounce>0</bounce>
 		<friction>0</friction>
 	<b2dRepulsion>20</b2dRepulsion>
-	<drawAnimals>0</drawAnimals>
+	<drawAnimals>1</drawAnimals>
 	</visuals>
 	<group>
 		<background>0, 0, 0, 255</background>
 		<swarm>255, 255, 255, 255</swarm>
-		<cluster_color>66, 93, 176, 255</cluster_color>
-	<swarmnBox2dColor>255, 255, 255, 255</swarmnBox2dColor>
+		<cluster_color>140, 93, 20, 255</cluster_color>
+	<swarmnBox2dColor>20, 140, 179, 255</swarmnBox2dColor>
 	<scale1>1.42347</scale1>
-		<numAttraction>3</numAttraction>
+		<numAttraction>44</numAttraction>
 		<one>
-			<offSet1X>639.692</offSet1X>
+			<offSet1X>-26.6972</offSet1X>
 			<offSet1Y>0</offSet1Y>
 		</one>
 		<two>
@@ -74,6 +74,7 @@
 			<offSet4Y>0</offSet4Y>
 			<overLap3>0</overLap3>
 		</four>
+	<useInsidePoly>0</useInsidePoly>
 	</group>
 <FazerParticles/>
 </FazerParticles>
