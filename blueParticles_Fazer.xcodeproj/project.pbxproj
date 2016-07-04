@@ -228,6 +228,7 @@
 		215697381D19CC9C00336E98 /* ofxBiquadFilterInstance.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxBiquadFilterInstance.cpp; sourceTree = "<group>"; };
 		215697391D19CC9C00336E98 /* ofxBiquadFilterInstance.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxBiquadFilterInstance.h; sourceTree = "<group>"; };
 		215FE9471D25256500C9ED77 /* animal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = animal.h; sourceTree = "<group>"; };
+		215FE94A1D2A4FE800C9ED77 /* person.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = person.h; sourceTree = "<group>"; };
 		219348AC1D0F018600257892 /* ofxBox2d.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxBox2d.cpp; sourceTree = "<group>"; };
 		219348AD1D0F018600257892 /* ofxBox2d.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxBox2d.h; sourceTree = "<group>"; };
 		219348AE1D0F018600257892 /* ofxBox2dBaseShape.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxBox2dBaseShape.cpp; sourceTree = "<group>"; };
@@ -1226,6 +1227,7 @@
 				2116C1AA1D0C031800168092 /* binnedParticle */,
 				21FBB5A71D086BFA004E5FEB /* defines.h */,
 				215FE9471D25256500C9ED77 /* animal.h */,
+				215FE94A1D2A4FE800C9ED77 /* person.h */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;

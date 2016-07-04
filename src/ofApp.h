@@ -12,11 +12,13 @@
 #include "animal.h"
 #include "swarmParticle.h"
 #include "binnedSystem.h"
+#include "person.h"
+
 
 class CustomParticle : public ofxBox2dCircle {
     
 public:
-    int age=0;
+    //int age=0;
     float radius;
     int num;
     //ofColor col;
@@ -29,35 +31,36 @@ public:
         ofVec2f vel= getVelocity();
         ofVec2f p= getPosition();
       //  addAttractionPoint(RES_W/2,RES_H/2,2);
-        if(p.x>(num+1)*(RES_W/4)){
-            addAttractionPoint(attractionPoint,3);
+        if(p.x>RES_W){//(num+1)*(RES_W/4)){
+            addAttractionPoint(attractionPoint,2);
            // addAttractionPoint(RES_W/2,RES_H/2,2);
 //            setVelocity(vel);
 //            setPosition(RES_W,p.y);
         }
         if(p.y>RES_H){
            // setVelocity(-1*vel);
-            addAttractionPoint(attractionPoint,3);
+            addAttractionPoint(attractionPoint,2);
             // addAttractionPoint(RES_W/2,RES_H/2,2);
 //            setVelocity(vel);
 //            setPosition(p.x,RES_H);
         }
         
-        if(p.x<num*(RES_W/4)){
-            addAttractionPoint(attractionPoint,3);
+        if(p.x<0){//num*(RES_W/4)){
+            addAttractionPoint(attractionPoint,2);
             // addAttractionPoint(RES_W/2,RES_H/2,2);
 //            setVelocity(vel);
 //            setPosition(0,p.y);
         }
         if(p.y<-50){
-            addAttractionPoint(attractionPoint,3);
+            addAttractionPoint(attractionPoint,2);
             // addAttractionPoint(RES_W/2,RES_H/2,2);
 //            setVelocity(vel);
 //            setPosition(p.x,0);
         }
      //   if(ofRandom(1)<0.001)addRepulsionForce(attractionPoint,0.1);
-        //if(vel.length()<1)setVelocity(vel*2);
-        if(vel.length()>5)setVelocity(vel.getNormalized()*2);
+        if(vel.length()<1)setVelocity(vel*1.2);
+        if(vel.length()>4)setVelocity(vel*0.8);
+        
     }
     
 
@@ -120,7 +123,7 @@ class ofApp : public ofBaseApp{
     // POINTS IN BLOBS!
     vector<vector<ofPoint>> attractPoints;
     
-    
+    vector<Person>people;
     // swarming Particles
     vector <swarmParticle> swarmParticles;
     void resetParticles();

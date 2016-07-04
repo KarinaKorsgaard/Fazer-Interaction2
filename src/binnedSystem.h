@@ -12,6 +12,7 @@
 #include "BinnedParticleSystem.h"
 #include "defines.h"
 #include "BinnedParticle.h"
+#include "person.h"
 
 class binnedSystem{
 public:
@@ -25,7 +26,7 @@ public:
     float particleNeighborhood, particleRepulsion;
     float centerAttraction;
   
-    vector< vector<ofPoint>>* attractPoints;
+    vector<Person>* people;
     int kBinnedParticles;
     BinnedParticleSystem particleSystem;
     bool bRepelFrom, slowMotion;
@@ -102,15 +103,20 @@ public:
         repelFrom.clear();
         bRepelFrom = false;
         
-        int cNum = int(ofMap(binCenter.x,0,RES_W,0,4));
+       // int cNum = int(ofMap(binCenter.x,0,RES_W,0,4));
 
-        for(int i = 0; i<attractPoints->at(cNum).size();i++){
-            int y = attractPoints->at(cNum)[i].y;
-            int x = attractPoints->at(cNum)[i].x;
-            
-            if(1/b2InvSqrt((binCenter.x-x)*(binCenter.x-x)+(binCenter.y-y)*(binCenter.y-y))< particleSystem.getWidth()/2){
-                repelFrom.push_back(ofPoint(x,y));
-                bRepelFrom = true;
+        
+        for(int i = 0; i<people->size();i++){
+            for(int u = 0; u<people->at(i).points.size();u++){
+                // if(people.area == cNum){
+                int y = people->at(i).points[u].y;
+                int x = people->at(i).points[u].x;
+                
+                if(1/b2InvSqrt((binCenter.x-x)*(binCenter.x-x)+(binCenter.y-y)*(binCenter.y-y))< particleSystem.getWidth()/2){
+                    repelFrom.push_back(ofPoint(x,y));
+                    bRepelFrom = true;
+                }
+                // }
             }
         }
         

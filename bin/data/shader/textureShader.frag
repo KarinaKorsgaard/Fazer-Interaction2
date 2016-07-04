@@ -11,7 +11,7 @@ void main () {
     vec2 uv = gl_FragCoord.xy / iResolution.x;
    
     vec4 col = texture2DRect(tex1, gl_TexCoord[0].xy);
-    //col.b=0.5;
+    //col.b=0.8;
    // col+= texture2DRect(tex0, gl_TexCoord[0].xy).r;
 //    
     float noise = (texture2D(tex0, uv * iResolution.x / 256.).r - 0.5) * .0;

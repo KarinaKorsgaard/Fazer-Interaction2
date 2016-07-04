@@ -11,7 +11,7 @@
 
 
 #include "defines.h"
-
+#include "person.h"
 
 class Animal {
     
@@ -24,7 +24,7 @@ public:
     ofPolyline poly;
     ofRectangle boundingBox;
     float radius;
-    vector< vector<ofPoint>>* attractPoints;
+    vector<Person>* people;
     int w,h;
     ofVec2f vel;
     bool sendOsc = false;
@@ -39,7 +39,7 @@ public:
     ofVec2f acc;
 //    shared_ptr<ofxBox2dPolygon> b2dPoly;
 
-    void setup(ofVec2f _pos, string _oscAddress, string _moving, string _still,  vector<vector <ofPoint>>* _attractPoints){
+    void setup(ofVec2f _pos, string _oscAddress, string _moving, string _still,  vector<Person>* _peeps){
         still = new ofVideoPlayer;
         moving = new ofVideoPlayer;
         still->load(_still);
@@ -59,7 +59,7 @@ public:
       // if(pos.x<210)track=true;
         oscAddress = _oscAddress;
         touched = false;
-        attractPoints = _attractPoints;
+        people = _peeps;
         radius = 150;
         vel = ofVec2f(ofRandom(-2,2), ofRandom(-0.5,0.5));
         if(vel.x<0.4)vel.x = 2;
@@ -72,11 +72,13 @@ public:
 
         int region =0;
         region = int(ofMap(pos.x,0,RES_W,0,4));
-        for(int i = 0 ; i<attractPoints->at(region).size();i++){
-            if(!isOn){
-                ofPoint p = attractPoints->at(region)[i];
-                if(dist(pos,p)<50){
-                    isOn = true;
+        for(int i = 0 ; i<people->size();i++){
+            for(int u = 0 ; u<people->at(i).points.size();u++){
+                if(!isOn){
+                    ofPoint p = people->at(i).points[u];
+                    if(dist(pos,p)<50){
+                        isOn = true;
+                    }
                 }
             }
         }

@@ -7,7 +7,7 @@ void ofApp::setup(){
     group.setName("FazerParticles");
     parameters.setName("offsetControl");
     ofParameterGroup aligning;
-    aligning.add(scale1.set("scale1",0,3,0));
+    aligning.add(scale1.set("scale1",1,0.5,1.5));
     
     ofParameterGroup one,two,three,four;
     one.setName("one");
@@ -15,29 +15,29 @@ void ofApp::setup(){
     three.setName("three");
     four.setName("four");
     
-    one.add(offSet1X.set("offSet1X",0,-100,RES_W));
+    one.add(offSet1X.set("offSet1X",0,RES_W,-100));
     one.add(offSet1Y.set("offSet1Y",0,-500,500));
     
     // this overlap is always 0.
-    two.add(offSet2X.set("offSet2X",0,-100,RES_W));
+    two.add(offSet2X.set("offSet2X",0,RES_W,-100));
     two.add(offSet2Y.set("offSet2Y",0,-500,500));
    // two.add(scale2.set("scale2",0,3,0));
     
     two.add(overLap1.set("overLap1",0,-700,700));
    
-    three.add(offSet3X.set("offSet3X",0,-100,RES_W));
+    three.add(offSet3X.set("offSet3X",0,RES_W,-100));
     three.add(offSet3Y.set("offSet3Y",0,-500,500));
   //  three.add(scale3.set("scale3",0,3,0));
     
     three.add(overLap2.set("overLap2",0,-700,700));
     
-    four.add(offSet4X.set("offSet4X",0,-100,RES_W));
+    four.add(offSet4X.set("offSet4X",0,RES_W,-100));
     four.add(offSet4Y.set("offSet4Y",0,-500,500));
    // four.add(scale4.set("scale4",0,3,0));
     
     four.add(overLap3.set("overLap3",0,-700,700));
     aligning.add(numAttractionP.set("numAttraction",5,1,60));
-    aligning.add(useInsidePoly.set("useInsidePoly", true));
+  //  aligning.add(useInsidePoly.set("useInsidePoly", true));
     
     aligning.add(one);
     aligning.add(two);
@@ -190,7 +190,7 @@ void ofApp::setup(){
         binnedSystem b;
         clusters.push_back(b);
         clusters.back().setup(ofVec2f((RES_W/(CLUSTER_NUM+1))*(i+1),ofRandom(100, RES_H-100)),num, size);
-        clusters.back().attractPoints = &attractPoints;
+        clusters.back().people = &people;
         for(int u = 0; u< num;u++){
             colorMesh.addVertex(ofVec3f(fazerColors[cIndx].r,fazerColors[cIndx].g,fazerColors[cIndx].b));
             cIndx = u%fazerColors.size();
@@ -208,7 +208,7 @@ void ofApp::setup(){
     
     for(int i = 0; i<dir.size();i+=2){
         Animal ani = *new Animal;
-        ani.setup(ofVec2f(i*200+200,RES_H/2),"/ani/"+ofToString(int(i/2),0),dir.getPath(i),dir.getPath(i+1),&attractPoints);
+        ani.setup(ofVec2f(i*200+200,RES_H/2),"/ani/"+ofToString(int(i/2),0),dir.getPath(i),dir.getPath(i+1),&people);
         animals.push_back(ani);
     }
     
@@ -249,6 +249,7 @@ void ofApp::update(){
     
     vector<float>scaleList;
     scaleList={scale1,scale1,scale1,scale1};
+    
 
 
     for(int r = 0; r<receivers.size();r++){
@@ -276,8 +277,8 @@ void ofApp::update(){
                     for(int  i = 0 ; i< msg.getNumArgs();i+=2){
                         
                         ofVec2f pt;
-                        pt.x= RES_W-((msg.getArgAsFloat(i)*scaleList[r]) + ofsetlistX[r]);
-                        pt.y= msg.getArgAsFloat(i+1)*scaleList[r] + ofsetlistY[r];;
+                        pt.x= RES_W-(ofMap(msg.getArgAsFloat(i),0,512,0,(RES_W/4)*scale1 ) + ofsetlistX[r]);
+                        pt.y= ofMap(msg.getArgAsFloat(i+1),0,512,0,RES_H) + ofsetlistY[r];;
                         blobs[r][pointCloudIndx].addVertex(pt);
                         
                     }
@@ -315,71 +316,103 @@ void ofApp::update(){
             float r = (2-2*sin(i) + sin(i)*sqrt(abs(cos(i))) / (sin(i)+1.4)) * -80;
             float x = ofGetWidth()/2 + cos(i) * r ;
             float y = ofGetHeight()/2 + sin(i) * r;
-            line2.addVertex(ofVec2f(x+offSet1X,y+offSet1Y));
+            line2.addVertex(ofVec2f(x+offSet2X,y+offSet2Y));
             i+=0.005*HALF_PI*0.5;
         }
         
         line2.close(); // close the shape
         
         blobs[0][0]=line.getResampledBySpacing(numAttractionP);
-        blobs[1][0]=line.getResampledBySpacing(numAttractionP);
-        blobs[2][0]=line.getResampledBySpacing(numAttractionP);
-        blobs[3][0]=line.getResampledBySpacing(numAttractionP);
+        blobs[1][0]=line2.getResampledBySpacing(numAttractionP);
+       // blobs[2][0]=line.getResampledBySpacing(numAttractionP);
+       // blobs[3][0]=line.getResampledBySpacing(numAttractionP);
 
     }
-
-
-    for(int i = 0; i<attractPoints.size();i++ )attractPoints[i].clear();
     
-    centroids.clear();
-    
-    vector<int>overLaps;
-    overLaps={0,overLap1,overLap2,overLap3};
-    int numBlobs=0;
-    for(int i = 0; i<blobs.size();i++){
-        for(int u = 0; u<blobs[i].size();u++){
-            
+    people.clear();
+    for(int i = 0; i < blobs.size();i++){
+        for(int u = 0; u< blobs[i].size();u++){
+            Person karina = *new Person;
             ofPolyline p=blobs[i][u];
-            numBlobs++;
+            vector<ofPoint>points;
             if(p.size()>0){
-                centroids.push_back(p.getCentroid2D());
-                attractPoints[i].push_back(p.getCentroid2D());
+                points.push_back(p.getCentroid2D());
                 for( int pt = 0; pt < p.getVertices().size(); pt++) {
-                    int x = p.getVertices().at(pt).x;
-                    if(x>0&&x<RES_W){
-                    int aNum = int(ofMap(x, 0, RES_W, 0, 4));
-                   
-                   // if(x>overLaps[i]+ofsetlistX[i])
-                        attractPoints[aNum].push_back(p.getVertices().at(pt));
-                    }
+                    points.push_back(p.getVertices().at(pt));
                 }
             }
+            karina.centroid = blobs[i][u].getCentroid2D();
+            karina.poly = p;
+            karina.area = int(ofMap(karina.centroid.x, 0, RES_W, 0, 4));
+            karina.points = points;
+            people.push_back(karina);
         }
     }
     
-
-    if(bDebug)attractPoints[1].push_back(ofPoint((RES_W/ofGetWidth() ) * mouseX, (RES_W/ofGetWidth())*mouseY)); // add mouse
-
+//
+//
+//    for(int i = 0; i<attractPoints.size();i++ )attractPoints[i].clear();
+//    
+//    centroids.clear();
+//    
+//    vector<int>overLaps;
+//    overLaps={0,overLap1,overLap2,overLap3};
+//    int numBlobs=0;
+//    for(int i = 0; i<blobs.size();i++){
+//        for(int u = 0; u<blobs[i].size();u++){
+//            
+//            ofPolyline p=blobs[i][u];
+//            numBlobs++;
+//            if(p.size()>0){
+//                centroids.push_back(p.getCentroid2D());
+//                attractPoints[i].push_back(p.getCentroid2D());
+//                for( int pt = 0; pt < p.getVertices().size(); pt++) {
+//                    int x = p.getVertices().at(pt).x;
+//                    if(x>0&&x<RES_W){
+//                    int aNum = int(ofMap(x, 0, RES_W, 0, 4));
+//                   
+//                   // if(x>overLaps[i]+ofsetlistX[i])
+//                        attractPoints[aNum].push_back(p.getVertices().at(pt));
+//                    }
+//                }
+//            }
+//        }
+//    }
+    
     for(int i = 0; i<sounds.size();i++){
-        bool on = false;
-        int iter = 0;
+//        bool on = false;
+//        int iter = 0;
+//        
+//        for(int a = 0; a<blobs.size();a++){
+//            for(int b = 0; b<blobs[a].size();b++){
+//                
+//                ofPolyline p=blobs[a][b];
+//                if(p.size()>0){
+//                    
+//                    if(abs(centroids[iter].x - sounds[i].pos.x)<RES_W/6){
+//                        
+//                        if( insidePolygon(sounds[i].pos, p)){
+//                            on=true;
+//                        }
+//                    }
+//                    iter ++;
+//                }
+//            }
+//        }
         
-        for(int a = 0; a<blobs.size();a++){
-            for(int b = 0; b<blobs[a].size();b++){
-                
-                ofPolyline p=blobs[a][b];
-                if(p.size()>0){
-                    
-                    if(abs(centroids[iter].x - sounds[i].pos.x)<RES_W/6){
-                        
-                        if( insidePolygon(sounds[i].pos, p)){
-                            on=true;
-                        }
+
+        bool on = false;
+        for(int u = 0; u<people.size();u++){
+            // for(int i = 0; i< sounds.size();i++){
+            if(!on){
+                if(abs(people[u].centroid.x - sounds[i].pos.x)<RES_W/6){
+                    if( insidePolygon(sounds[i].pos, people[u].poly)){
+                        on=true;
                     }
-                    iter ++;
                 }
             }
         }
+        
         
         if(on && !sounds[i].toggle){
             ofxOscMessage m;
@@ -414,8 +447,10 @@ void ofApp::update(){
     }
     
     if(swarm){
+        
+        mesh.clear();
         for(int i = 0; i<customParticles.size();i++){
-          //  int cNum =customParticles[i]->num;
+           // int cNum =customParticles[i]->num;
             int x1 = customParticles[i]->getPosition().x;
             int y1 = customParticles[i]->getPosition().y;
             
@@ -432,30 +467,61 @@ void ofApp::update(){
                     }
                 }
             }
+//            int closestDist = 9999;
+//            int closest = -1;
+//            int closestcNum = -1;
+//            bool found = false;
+//            
+//            for(int cNum= 0;cNum<attractPoints.size();cNum++){
+//                if(!found){
+//                for(int a= 0;a<attractPoints[cNum].size();a++){
+//                  if(!found){
+//                    int x2 = attractPoints[cNum][a].x;
+//                    int y2 = attractPoints[cNum][a].y;
+//                    int dist =1/b2InvSqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2));
+//                    if(dist<closestDist && dist < sNear){
+//                        closestDist =dist ;
+//                        closest = a;
+//                        closestcNum = cNum;
+//                        found = true;
+//                    }
+//                }
+//                }
+//                }
+//            }
+//
+//            if(closest!=-1){
+//                //customParticles[i]->addImpulseForce(ofVec2f pt, ofVec2f amt);
+//                //customParticles[i]->addImpulseForce(attractPoints[closestcNum][closest],ofVec2f(0,0));
+//               // customParticles[i]->setVelocity(customParticles[i]->getVelocity()*-1);
+//               if(centroids.size()>0) customParticles[i]->addRepulsionForce(centroids[0], b2dRepulsion);
+//                //customParticles[i]->addRepulsionForce(centroids[theI], b2dRepulsion);
+//            }
             
-            for(int cNum= 0;cNum<attractPoints.size();cNum++){
-                for(int a= 0;a<attractPoints[cNum].size();a++){
-                int x2 = attractPoints[cNum][a].x;
-                int y2 = attractPoints[cNum][a].y;
-                
-                if(1/b2InvSqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2))<sNear){
-       
-                    customParticles[i]->addRepulsionForce(attractPoints[cNum][a],b2dRepulsion);
-                }
+            for(int u = 0; u<people.size();u++){
+                bool found = false;
+                for(int p = 0; p<people[u].points.size();p++){
+                    if(!found){
+                        int x2 = people[u].points[p].x;
+                        int y2 = people[u].points[p].y;
+                        int dist =1/b2InvSqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2));
+                        if(dist<customParticles[i]->getRadius()){
+                            found = true;
+                            customParticles[i]->addRepulsionForce(people[u].centroid, b2dRepulsion);
+                        }
+                    }
                 }
             }
+            customParticles[i]->update();
+            mesh.addVertex(ofVec3f(float(customParticles[i]->getPosition().x),float(customParticles[i]->getPosition().y),customParticles[i]->getRadius()));
+            
         }
         box2d.update();
-    
-        mesh.clear();
-        for(unsigned int i = 0; i < customParticles.size(); i++){
-            customParticles[i]->update();
-            int ra=0;
-            mesh.addVertex(ofVec3f(float(customParticles[i]->getPosition().x+ra),float(customParticles[i]->getPosition().y+ra),customParticles[i]->getRadius()));
-        }
         vbo.setVertexData(&mesh.getVertices()[0], SWARM_NUM, GL_STATIC_DRAW);
     }
 
+    
+    
     if(cluster){
         //int red = ((sin(ofGetElapsedTimef()/10))+1) * 160/2;
         //clusterRange2.set(ofColor(red,clusterRange2->g,160-red));
@@ -464,7 +530,7 @@ void ofApp::update(){
         for(int i = 0 ; i< clusters.size();i++){
             clusters[i].update();
             clusters[i].oldApp = oldApp;
-            if(numBlobs==0)  clusters[i].centerAttraction = 0;
+            if(people.size()==0)  clusters[i].centerAttraction = 0;
             else clusters[i].centerAttraction = cAttraction;
         }
     }
@@ -476,31 +542,28 @@ void ofApp::update(){
         pointSplineFbo.begin();
         ofClear(0, 0);
         ofEnableAlphaBlending();
+        
         if(drawAnimals)for(auto a: animals)a.draw();
         
-        ofSetColor(255);
-        for(int i = 0; i< customParticles.size();i++){
-            ofSetColor(fazerColors[i%fazerColors.size()]);
-            ofDrawCircle(customParticles[i]->getPosition(),customParticles[i]->getRadius());
-        }
+        pointSpline.begin();
+        
         glDepthMask(GL_FALSE);
         ofEnablePointSprites();
-        
         if(blend_ADD){
             ofEnableBlendMode(OF_BLENDMODE_ADD);
         }
-        
-        pointSpline.begin();
         if(cluster){
             int cIndex = 0;
             for(int i = 0 ; i< clusters.size();i++){
                 cIndex = i%fazerColors.size();
-            
+                
                 if(evenColor1)pointSpline.setUniform1f("evenColor", 1.);
                 else pointSpline.setUniform1f("evenColor", 0.);
                 
+                if(!evenColor1)pointSpline.setUniform3f("col", float(fazerColors[cIndex].r), float(fazerColors[cIndex].g), float(fazerColors[cIndex].b));
+                
                 if(blurImg1)pointSpline.setUniform1f("addthis", 7.5);
-                else pointSpline.setUniform1f("addthis", 2.2);
+                else pointSpline.setUniform1f("addthis", 2.);
                 
                 if(fluidcolor)pointSpline.setUniform3f("col", float(clusterRange2->r+clusters[i].r), float(clusterRange2->g+clusters[i].g), float(clusterRange2->b+clusters[i].b));
                 
@@ -509,57 +572,62 @@ void ofApp::update(){
                 clusters[i].vbo.draw(GL_POINTS, 0, (int)clusters[i].particleSystem.size());
                 if(blurImg1)sparkImg.unbind();
                 else solid.unbind();
-                
-                
             }
         }
-        pointSpline.end();
+//        pointSpline.end();
+//        glDepthMask(GL_TRUE);
+//        ofDisablePointSprites();
+     
+        
+//        ofSetColor(255);
+//        for(int i = 0; i< customParticles.size();i++){
+//          //  ofSetColor(fazerColors[i%fazerColors.size()]);
+//            ofDrawCircle(customParticles[i]->getPosition(),customParticles[i]->getRadius());
+//        }
+        
+        ofDisableBlendMode();
+       // ofDisableAlphaBlending();
+        
+        
 ////        glDepthMask(GL_TRUE);
 ////
-//        ofDisableBlendMode();
-//       ofEnableAlphaBlending();
-////
-////        ofDisablePointSprites();
-//        
-// //       ofEnablePointSprites();
-//   //     glDepthMask(GL_FALSE);
-//
-//        
-//        pointSpline.begin();
-//        if(swarm){
-//            if(evenColor)pointSpline.setUniform1f("evenColor", 1.);
-//            else pointSpline.setUniform1f("evenColor", 0.);
-//            
-//            if(blurImg)pointSpline.setUniform1f("addthis", 7.5);
-//            else pointSpline.setUniform1f("addthis", 2.2);
-//            
-//            int cIndex = 0;
-//            // bind the texture so that when all the points
-//            // are drawn they are replace with our dot image
-//            // pointSpline.setUniform3f("col", float(swarmColor->r), float(swarmColor->g), float(swarmColor->b));
-//            // if(!evenColor)pointSpline.setUniform3f("col", float(fazerColors[cIndex].r), float(fazerColors[cIndex].g), float(fazerColors[cIndex].b));
-//            
-//            if(!fluidcolor)pointSpline.setUniform3f("col", float(swarmColor->r), float(swarmColor->g), float(swarmColor->b));
-//            if(fluidcolor)pointSpline.setUniform3f("col", float(clusterRange2->r), float(clusterRange2->g), float(clusterRange2->b));
-//            
-//            if(!blurImg) solid.bind();
-//            else sparkImg.bind();
-//            vbo.draw(GL_POINTS, 0, (int)SWARM_NUM);
-//            if(!blurImg) solid.unbind();
-//            else sparkImg.unbind();
-//            
-//        }
-//        
-//        pointSpline.end();
-//        
-//        glDepthMask(GL_TRUE);
-//        
+        ofDisableBlendMode();
+        ofEnableAlphaBlending();
+//        glDepthMask(GL_FALSE);
+//        ofEnablePointSprites();
+
+        
+        pointSpline.begin();
+        if(swarm){
+            if(evenColor)pointSpline.setUniform1f("evenColor", 1.);
+            else pointSpline.setUniform1f("evenColor", 0.);
+            
+            if(blurImg)pointSpline.setUniform1f("addthis", 7.5);
+            else pointSpline.setUniform1f("addthis", 2.);
+            
+            int cIndex = 0;
+            // bind the texture so that when all the points
+            // are drawn they are replace with our dot image
+            // pointSpline.setUniform3f("col", float(swarmColor->r), float(swarmColor->g), float(swarmColor->b));
+            // if(!evenColor)pointSpline.setUniform3f("col", float(fazerColors[cIndex].r), float(fazerColors[cIndex].g), float(fazerColors[cIndex].b));
+            
+            if(!fluidcolor)pointSpline.setUniform3f("col", float(swarmColor->r), float(swarmColor->g), float(swarmColor->b));
+            if(fluidcolor)pointSpline.setUniform3f("col", float(clusterRange2->r), float(clusterRange2->g), float(clusterRange2->b));
+            
+            if(!blurImg) solid.bind();
+            else sparkImg.bind();
+            vbo.draw(GL_POINTS, 0, (int)SWARM_NUM);
+            if(!blurImg) solid.unbind();
+            else sparkImg.unbind();
+            
+        }
+        
+        pointSpline.end();
         pointSplineFbo.end();
-        
-        
+        glDepthMask(GL_TRUE);
         ofDisablePointSprites();
         ofDisableBlendMode();
-        ofDisableAlphaBlending();
+
         
 
 
@@ -600,36 +668,84 @@ void ofApp::update(){
     
     
     if(bDebug){
-        ofSetColor(255,255,0);
-        ofSetLineWidth(4);
-        ofSetColor(255,255,0,200);
-        ofDrawRectangle(offSet2X, 0, overLap1, RES_H);
-        ofDrawRectangle(offSet3X, 0, overLap2, RES_H);
-        ofDrawRectangle(offSet4X, 0, overLap3, RES_H);
         
-        ofSetColor(ofColor::red);
-        ofDrawLine(offSet1X, 0, offSet1X, RES_H);
-        ofDrawLine(offSet2X, 0, offSet2X, RES_H);
-        ofDrawLine(offSet3X, 0, offSet3X, RES_H);
-        ofDrawLine(offSet4X, 0, offSet4X, RES_H);
+//        ofSetLineWidth(4);
+//        ofSetColor(255,255,0,200);
+//        ofDrawRectangle(offSet2X, 0, overLap1, RES_H);
+//        ofDrawRectangle(offSet3X, 0, overLap2, RES_H);
+//        ofDrawRectangle(offSet4X, 0, overLap3, RES_H);
         
+//        ofSetColor(ofColor::red);
+//        ofDrawLine(RES_W-offSet1X, 0, RES_W-offSet1X, RES_H);
+//        ofDrawLine(RES_W-offSet2X, 0, RES_W-offSet2X, RES_H);
+//        ofDrawLine(RES_W-offSet3X, 0, RES_W-offSet3X, RES_H);
+//        ofDrawLine(RES_W-offSet4X, 0, RES_W-offSet4X, RES_H);
+//        
+//        ofSetColor(ofColor::red);
+//        ofDrawLine(0, offSet1Y+RES_H, RES_W, offSet1Y+RES_H);
+//        ofDrawLine(0, offSet2Y+RES_H, RES_W, offSet2Y+RES_H);
+//        ofDrawLine(0, offSet3Y+RES_H, RES_W, offSet3Y+RES_H);
+//        ofDrawLine(0, offSet4Y+RES_H, RES_W, offSet4Y+RES_H);
+        
+        //int k1 = offSet1Y+RES_W/8;
+       // int k2 = offSet1Y+RES_W/4;
+       //
+     
+             ofSetLineWidth(10);
+        int k1 = offSet1X + ((RES_W/4)*scale1 /2);
+        int k2 = offSet1X;
+        int k3 =(RES_W/4)*scale1 + offSet1X;
+        ofNoFill();
         ofSetColor(ofColor::green);
-        ofDrawLine(0, offSet1Y, RES_W, offSet1Y);
-        ofDrawLine(0, offSet2Y, RES_W, offSet2Y);
-        ofDrawLine(0, offSet3Y, RES_W, offSet3Y);
-        ofDrawLine(0, offSet4Y, RES_W, offSet4Y);
+        ofDrawLine(RES_W-k1,0,RES_W-k1,RES_H);
+//        ofSetColor(255,0,0);
+//        ofDrawRectangle(RES_W-k2 - (k3-k2), 10, k3-k2, RES_H-10);
         
-
-        for(int i=0; i<attractPoints.size(); i++) {
-            for(int u=0; u<attractPoints[i].size(); u++) {
-                if(attractPoints[i][u].x<RES_W-10 && attractPoints[i][u].x > 10){
-                    if(attractPoints[i][u].y<RES_H-10 && attractPoints[i][u].x > 10){
-                        ofSetColor(255,0,0);
-                        ofDrawCircle(attractPoints[i][u],5);
-                    }
-                }
-            }
-        }
+         k1 = offSet2X + ((RES_W/4)*scale1 /2);
+         k2 = offSet2X;
+         k3 =(RES_W/4)*scale1 + offSet2X;
+        ofNoFill();
+        ofSetColor(ofColor::green);
+        ofDrawLine(RES_W-k1,0,RES_W-k1,RES_H);
+//        ofSetColor(255,0,0);
+//        ofDrawRectangle(RES_W-k2 - (k3-k2), 10, k3-k2, RES_H-10);
+        
+         k1 = offSet3X + ((RES_W/4)*scale1 /2);
+         k2 = offSet3X;
+         k3 =(RES_W/4)*scale1 + offSet3X;
+        ofNoFill();
+        ofSetColor(ofColor::green);
+        ofDrawLine(RES_W-k1,0,RES_W-k1,RES_H);
+//        ofSetColor(255,0,0);
+//        ofDrawRectangle(RES_W-k2 - (k3-k2), 10, k3-k2, RES_H-10);
+        
+   
+        
+         k1 = offSet4X + ((RES_W/4)*scale1 /2);
+         k2 = offSet4X;
+         k3 =(RES_W/4)*scale1 + offSet4X;
+        
+        ofNoFill();
+        ofSetColor(ofColor::green);
+        ofDrawLine(RES_W-k1,0,RES_W-k1,RES_H);
+//        ofSetColor(255,0,0);
+//        ofDrawRectangle(RES_W-k2 - (k3-k2), 10, k3-k2, RES_H-10);
+        //(RES_W-k1, 0, RES_W-k2, RES_H, RES_W-k3, RES_H);
+        
+        ofFill();
+        ofSetLineWidth(4);
+//        for(int i=0; i<attractPoints.size(); i++) {
+//            for(int u=0; u<attractPoints[i].size(); u++) {
+//                if(attractPoints[i][u].x<RES_W-10 && attractPoints[i][u].x > 10){
+//                    if(attractPoints[i][u].y<RES_H-10 && attractPoints[i][u].x > 10){
+//                        ofSetColor(255,0,0);
+//                        ofDrawCircle(attractPoints[i][u],5);
+//                    }
+//                }
+//            }
+//        }
+        ofSetColor(255);
+        for(auto p:people)p.draw();
         
         ofSetLineWidth(2);
         ofSetColor(ofColor::white);
@@ -638,17 +754,12 @@ void ofApp::update(){
             ofDrawBitmapStringHighlight(ofToString(i)+ " m", i+10, 10);
         
         }
-        
+        ofNoFill();
         for(auto s:sounds){
             ofDrawCircle(s.pos,20);
         }
-        ofNoFill();
-        ofSetColor(255);
-        ofSetLineWidth(3);
-        for(int i = 0; i<animals.size();i++){
-            ofDrawCircle(animals[i].pos,150);
-        }
-
+        
+        
     }
   //  post.end();
     finalRender.end();
@@ -688,7 +799,7 @@ void ofApp::draw(){
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
     if(key=='d')bDebug = !bDebug;
-    if(key=='s')drawGui = !drawGui;
+    if(key=='g')drawGui = !drawGui;
     if(key=='l'){soudoLine=!soudoLine;
         if(!soudoLine){
             blobs[0][0].clear();
