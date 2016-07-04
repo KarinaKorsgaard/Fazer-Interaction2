@@ -55,24 +55,24 @@
 		<swarm>255, 255, 255, 255</swarm>
 		<cluster_color>82, 81, 102, 255</cluster_color>
 	<swarmnBox2dColor>106, 102, 119, 255</swarmnBox2dColor>
-	<scale1>1.20408</scale1>
-		<numAttraction>35</numAttraction>
+	<scale1>1.94898</scale1>
+		<numAttraction>28</numAttraction>
 		<one>
-			<offSet1X>2264.25</offSet1X>
-			<offSet1Y>-77.8842</offSet1Y>
+			<offSet1X>94.0806</offSet1X>
+			<offSet1Y>-500</offSet1Y>
 		</one>
 		<two>
-			<offSet2X>1999.6</offSet2X>
-			<offSet2Y>-500</offSet2Y>
+			<offSet2X>1099.77</offSet2X>
+			<offSet2Y>-457.934</offSet2Y>
 			<overLap1>0</overLap1>
 		</two>
 		<three>
-			<offSet3X>2458.33</offSet3X>
+			<offSet3X>3289</offSet3X>
 			<offSet3Y>-473.553</offSet3Y>
 			<overLap2>0</overLap2>
 		</three>
 		<four>
-			<offSet4X>5.8623</offSet4X>
+			<offSet4X>3289</offSet4X>
 			<offSet4Y>-348.605</offSet4Y>
 			<overLap3>0</overLap3>
 		</four>

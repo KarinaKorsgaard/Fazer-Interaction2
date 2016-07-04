@@ -7,8 +7,8 @@ void ofApp::setup(){
     group.setName("FazerParticles");
     parameters.setName("offsetControl");
     ofParameterGroup aligning;
-    aligning.add(scale1.set("scale1",1,0.5,1.5));
-    
+    aligning.add(scale1.set("scale1",1,0.5,2.5));
+    aligning.add(scale2.set("scale1",1,0.5,2.5));
     ofParameterGroup one,two,three,four;
     one.setName("one");
     two.setName("two");
@@ -20,19 +20,19 @@ void ofApp::setup(){
     
     // this overlap is always 0.
     two.add(offSet2X.set("offSet2X",0,RES_W,-100));
-    two.add(offSet2Y.set("offSet2Y",0,-500,500));
+    two.add(offSet2Y.set("offSet2Y",0,-900,500));
    // two.add(scale2.set("scale2",0,3,0));
     
     two.add(overLap1.set("overLap1",0,-700,700));
    
     three.add(offSet3X.set("offSet3X",0,RES_W,-100));
-    three.add(offSet3Y.set("offSet3Y",0,-500,500));
+    three.add(offSet3Y.set("offSet3Y",0,-900,500));
   //  three.add(scale3.set("scale3",0,3,0));
     
     three.add(overLap2.set("overLap2",0,-700,700));
     
     four.add(offSet4X.set("offSet4X",0,RES_W,-100));
-    four.add(offSet4Y.set("offSet4Y",0,-500,500));
+    four.add(offSet4Y.set("offSet4Y",0,-900,500));
    // four.add(scale4.set("scale4",0,3,0));
     
     four.add(overLap3.set("overLap3",0,-700,700));
@@ -147,7 +147,7 @@ void ofApp::setup(){
     }
     cout << fazerColors.size()<<endl;
 
-    ofSetCircleResolution(100);
+    //ofSetCircleResolution(100);
     box2d.init();
     box2d.setGravity(0, 0);
     box2d.createGround(0, RES_H, RES_W, RES_H);
@@ -163,7 +163,7 @@ void ofApp::setup(){
         fours = (i*4) / num;
         customParticles.push_back(shared_ptr<CustomParticle>(new CustomParticle));
         CustomParticle * p = customParticles.back().get();
-        float r = ofRandom(8, 65);		// a random radius 4px - 20px
+        float r = ofRandom(8, 45);		// a random radius 4px - 20px
         r = ofRandom(8,r);
         //float density, float bounce, float friction
         p->setPhysics(ofRandom(0.1,5), ofRandom(0.1,0.5) ,0);
@@ -278,7 +278,7 @@ void ofApp::update(){
                         
                         ofVec2f pt;
                         pt.x= RES_W-(ofMap(msg.getArgAsFloat(i),0,512,0,(RES_W/4)*scale1 ) + ofsetlistX[r]);
-                        pt.y= ofMap(msg.getArgAsFloat(i+1),0,512,0,RES_H) + ofsetlistY[r];;
+                        pt.y= ofMap(msg.getArgAsFloat(i+1),0,512,0,RES_H*scale2) + ofsetlistY[r];;
                         blobs[r][pointCloudIndx].addVertex(pt);
                         
                     }
@@ -467,36 +467,7 @@ void ofApp::update(){
                     }
                 }
             }
-//            int closestDist = 9999;
-//            int closest = -1;
-//            int closestcNum = -1;
-//            bool found = false;
-//            
-//            for(int cNum= 0;cNum<attractPoints.size();cNum++){
-//                if(!found){
-//                for(int a= 0;a<attractPoints[cNum].size();a++){
-//                  if(!found){
-//                    int x2 = attractPoints[cNum][a].x;
-//                    int y2 = attractPoints[cNum][a].y;
-//                    int dist =1/b2InvSqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2));
-//                    if(dist<closestDist && dist < sNear){
-//                        closestDist =dist ;
-//                        closest = a;
-//                        closestcNum = cNum;
-//                        found = true;
-//                    }
-//                }
-//                }
-//                }
-//            }
-//
-//            if(closest!=-1){
-//                //customParticles[i]->addImpulseForce(ofVec2f pt, ofVec2f amt);
-//                //customParticles[i]->addImpulseForce(attractPoints[closestcNum][closest],ofVec2f(0,0));
-//               // customParticles[i]->setVelocity(customParticles[i]->getVelocity()*-1);
-//               if(centroids.size()>0) customParticles[i]->addRepulsionForce(centroids[0], b2dRepulsion);
-//                //customParticles[i]->addRepulsionForce(centroids[theI], b2dRepulsion);
-//            }
+
             
             for(int u = 0; u<people.size();u++){
                 bool found = false;
@@ -574,27 +545,10 @@ void ofApp::update(){
                 else solid.unbind();
             }
         }
-//        pointSpline.end();
-//        glDepthMask(GL_TRUE);
-//        ofDisablePointSprites();
-     
-        
-//        ofSetColor(255);
-//        for(int i = 0; i< customParticles.size();i++){
-//          //  ofSetColor(fazerColors[i%fazerColors.size()]);
-//            ofDrawCircle(customParticles[i]->getPosition(),customParticles[i]->getRadius());
-//        }
-        
+
         ofDisableBlendMode();
-       // ofDisableAlphaBlending();
-        
-        
-////        glDepthMask(GL_TRUE);
-////
         ofDisableBlendMode();
         ofEnableAlphaBlending();
-//        glDepthMask(GL_FALSE);
-//        ofEnablePointSprites();
 
         
         pointSpline.begin();
@@ -632,20 +586,13 @@ void ofApp::update(){
 
 
     }
-
-    // final render
+    
+    
     finalRender.begin();
-  //  post.begin();
     ofClear(0);
     ofSetColor(255);
     ofEnableAlphaBlending();
 
-  //  ofBackgroundGradient(clusterRange1,clusterRange2, OF_GRADIENT_LINEAR);
-    
-    
-
-  //  textureFbo.begin();
-  //  ofClear(0);
     if(cluster||swarm||drawAnimals){
     ofSetColor(255);
     textureShader.begin();
@@ -654,42 +601,8 @@ void ofApp::update(){
     pointSplineFbo.draw(0,0);
     textureShader.end();
     }
-  //  textureFbo.end();
-    
-    
-//    ofSetColor(255);
-//    if(cluster||swarm){
-//        pointSplineFbo.draw(0,0);
-//    }
-    
-
-   
-
-    
-    
     if(bDebug){
         
-//        ofSetLineWidth(4);
-//        ofSetColor(255,255,0,200);
-//        ofDrawRectangle(offSet2X, 0, overLap1, RES_H);
-//        ofDrawRectangle(offSet3X, 0, overLap2, RES_H);
-//        ofDrawRectangle(offSet4X, 0, overLap3, RES_H);
-        
-//        ofSetColor(ofColor::red);
-//        ofDrawLine(RES_W-offSet1X, 0, RES_W-offSet1X, RES_H);
-//        ofDrawLine(RES_W-offSet2X, 0, RES_W-offSet2X, RES_H);
-//        ofDrawLine(RES_W-offSet3X, 0, RES_W-offSet3X, RES_H);
-//        ofDrawLine(RES_W-offSet4X, 0, RES_W-offSet4X, RES_H);
-//        
-//        ofSetColor(ofColor::red);
-//        ofDrawLine(0, offSet1Y+RES_H, RES_W, offSet1Y+RES_H);
-//        ofDrawLine(0, offSet2Y+RES_H, RES_W, offSet2Y+RES_H);
-//        ofDrawLine(0, offSet3Y+RES_H, RES_W, offSet3Y+RES_H);
-//        ofDrawLine(0, offSet4Y+RES_H, RES_W, offSet4Y+RES_H);
-        
-        //int k1 = offSet1Y+RES_W/8;
-       // int k2 = offSet1Y+RES_W/4;
-       //
      
              ofSetLineWidth(10);
         int k1 = offSet1X + ((RES_W/4)*scale1 /2);
@@ -734,24 +647,17 @@ void ofApp::update(){
         
         ofFill();
         ofSetLineWidth(4);
-//        for(int i=0; i<attractPoints.size(); i++) {
-//            for(int u=0; u<attractPoints[i].size(); u++) {
-//                if(attractPoints[i][u].x<RES_W-10 && attractPoints[i][u].x > 10){
-//                    if(attractPoints[i][u].y<RES_H-10 && attractPoints[i][u].x > 10){
-//                        ofSetColor(255,0,0);
-//                        ofDrawCircle(attractPoints[i][u],5);
-//                    }
-//                }
-//            }
-//        }
+
         ofSetColor(255);
         for(auto p:people)p.draw();
         
         ofSetLineWidth(2);
         ofSetColor(ofColor::white);
+        int itr = 0;
         for(int i = 0; i<RES_W;i+=240){
             ofDrawLine(i, 0, i, RES_H);
-            ofDrawBitmapStringHighlight(ofToString(i)+ " m", i+10, 10);
+            ofDrawBitmapStringHighlight(ofToString(itr)+ " m", i+10, 10);
+            itr++;
         
         }
         ofNoFill();
@@ -761,13 +667,12 @@ void ofApp::update(){
         
         
     }
-  //  post.end();
     finalRender.end();
     
     ofFill();
 
     if(finalRender.isAllocated())syphon.publishTexture(&finalRender.getTexture());
-  //  syphon.publishTexture(<#GLuint id#>, <#GLenum target#>, <#GLsizei width#>, <#GLsizei height#>, <#bool isFlipped#>)
+
 }
 
 

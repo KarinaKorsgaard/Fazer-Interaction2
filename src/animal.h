@@ -44,10 +44,7 @@ public:
         moving = new ofVideoPlayer;
         still->load(_still);
         moving->load(_moving);
-       // w = still->getWidth();
-       // h = still->getHeight();
-       // still->resize(w/4,h/4);
-       // moving->resize(w/4,h/4);
+
         
         
         still->setLoopState(OF_LOOP_NORMAL);
@@ -61,8 +58,8 @@ public:
         touched = false;
         people = _peeps;
         radius = 150;
-        vel = ofVec2f(ofRandom(-2,2), ofRandom(-0.5,0.5));
-        if(vel.x<0.4)vel.x = 2;
+        //vel = ofVec2f(ofRandom(-2,2), ofRandom(-0.5,0.5));
+        //if(vel.x<0.4)vel.x = 2;
        // acc = ofVec2f(ofRandom(-1,1),-0.8);
     }
     
