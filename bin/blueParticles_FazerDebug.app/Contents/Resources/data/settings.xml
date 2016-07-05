@@ -55,14 +55,14 @@
 		<swarm>255, 255, 255, 255</swarm>
 		<cluster_color>82, 81, 102, 255</cluster_color>
 	<swarmnBox2dColor>106, 102, 119, 255</swarmnBox2dColor>
-	<scale1>1.94898</scale1>
+	<scale1>1.60204</scale1>
 		<numAttraction>26</numAttraction>
 		<one>
-			<offSet1X>76.4368</offSet1X>
-			<offSet1Y>-500</offSet1Y>
+			<offSet1X>923.334</offSet1X>
+			<offSet1Y>-343.399</offSet1Y>
 		</one>
 		<two>
-			<offSet2X>1099.77</offSet2X>
+			<offSet2X>1981.96</offSet2X>
 			<offSet2Y>-457.934</offSet2Y>
 			<overLap1>0</overLap1>
 		</two>
