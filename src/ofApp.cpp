@@ -108,32 +108,16 @@ void ofApp::setup(){
     ofClear(0);
     finalRender.end();
     
-    textureFbo.allocate(RES_W,RES_H);
-    textureFbo.begin();
-    ofClear(0);
-    textureFbo.end();
-    
 
     sparkImg.allocate(128,128, GL_RGBA);
     ofDisableArbTex();
-     ofLoadImage(sparkImg, "dot.png");
+    ofLoadImage(sparkImg, "dot.png");
     ofEnableArbTex();
     
     solid.allocate(128,128, GL_RGBA);
     ofDisableArbTex();
     ofLoadImage(solid, "clear.png");
     ofEnableArbTex();
-    
-    texture.allocate(128,128, GL_RGBA);
-    ofDisableArbTex();
-    ofLoadImage(texture, "texture.png");
-    ofEnableArbTex();
-    texture.setTextureWrap(GL_REPEAT, GL_REPEAT);
-    
-    textureShader.load("shader/textureShader");
-    textureShader.begin();
-    textureShader.setUniform2f("iResolution", RES_W, RES_H);
-    textureShader.end();
     
     pointSpline.load("shader/shader");
  
@@ -279,8 +263,7 @@ void ofApp::update(){
             
             ofxOscMessage msg;
             receivers[r].getNextMessage(msg);
-            
-            
+
             
             if(msg.getAddress()=="/numPeople"){
                 for(int i=msg.getArgAsInt(0);i<blobs[r].size();i++){
@@ -319,43 +302,7 @@ void ofApp::update(){
         }
     }
     
-   // add random blob
-    if(soudoLine){
-        blobs[0][0].clear();
-        blobs[1][0].clear();
-        blobs[2][0].clear();
-        blobs[3][0].clear();
-        //testPoly
-        ofPolyline line;
-        float i = 0;
-        while (i < TWO_PI ) { // make a heart
-            float r = (2-2*sin(i) + sin(i)*sqrt(abs(cos(i))) / (sin(i)+1.4)) * -80;
-            float x = ofGetWidth()/2 + cos(i) * r;
-            float y = ofGetHeight()/2 + sin(i) * r;
-            line.addVertex(ofVec2f(x+RES_W/6+offSet1X,y+offSet1Y));
-            i+=0.005*HALF_PI*0.5;
-        }
-        
-        line.close(); // close the shape
-        
-        ofPolyline line2;
-        i = 0;
-        while (i < TWO_PI ) { // make a heart
-            float r = (2-2*sin(i) + sin(i)*sqrt(abs(cos(i))) / (sin(i)+1.4)) * -80;
-            float x = ofGetWidth()/2 + cos(i) * r ;
-            float y = ofGetHeight()/2 + sin(i) * r;
-            line2.addVertex(ofVec2f(x+offSet2X,y+offSet2Y));
-            i+=0.005*HALF_PI*0.5;
-        }
-        
-        line2.close(); // close the shape
-        
-        blobs[0][0]=line.getResampledBySpacing(numAttractionP);
-        blobs[1][0]=line2.getResampledBySpacing(numAttractionP);
-       // blobs[2][0]=line.getResampledBySpacing(numAttractionP);
-       // blobs[3][0]=line.getResampledBySpacing(numAttractionP);
 
-    }
     
     people.clear();
     for(int i = 0; i < blobs.size();i++){
@@ -371,62 +318,18 @@ void ofApp::update(){
             }
             karina.centroid = blobs[i][u].getCentroid2D();
             karina.poly = p;
-            karina.area = int(ofMap(karina.centroid.x, 0, RES_W, 0, 4));
+          //  karina.area = int(ofMap(karina.centroid.x, 0, RES_W, 0, 4));
             karina.points = points;
             people.push_back(karina);
         }
     }
-    
 
     
-//    for(int i = 0; i<sounds.size();i++){
-//
-//        bool on = false;
-//        for(int u = 0; u<people.size();u++){
-//            // for(int i = 0; i< sounds.size();i++){
-//            if(!on){
-//                if(abs(people[u].centroid.x - sounds[i].pos.x)<RES_W/6){
-//                    if( insidePolygon(sounds[i].pos, people[u].poly)){
-//                        on=true;
-//                    }
-//                }
-//            }
-//        }
-//        
-//        
-//        if(on && !sounds[i].toggle){
-//            ofxOscMessage m;
-//            m.setAddress(sounds[i].name);
-//            m.addInt32Arg(1);
-//            soundSender.sendMessage(m);
-//            sounds[i].toggle=true;
-//        }
-//        if(!on && sounds[i].toggle){
-//            sounds[i].toggle = false;
-//        }
-//    }
     
     if(drawAnimals){
         for(int i = 0 ; i< animals.size();i++){
             animals[i].update();
-            
-//            if(animals[i].idle && !animals[i].beginSequence){
-//                if(ofRandom(10)<0.05){
-//                    animals[i].touched = true;
-//                    animals[i].sendOsc = true;
-//                    animals[i].still->setPaused(true);
-//                    animals[i].count = 0;
-//                    animals[i].beginSequence=true;
-//                }
-//            }
-//            
-//            if(animals[i].sendOsc){
-//                animals[i].sendOsc=false;
-//                ofxOscMessage m;
-//                m.setAddress(animals[i].oscAddress);
-//                m.addIntArg(1);
-//                soundSender.sendMessage(m);
-//            }
+
         }
     }
     
@@ -438,16 +341,19 @@ void ofApp::update(){
             int x1 = customParticles[i]->getPosition().x;
             int y1 = customParticles[i]->getPosition().y;
             
+            bool found = false;
+            
             for(int u = 0; u<people.size();u++){
-                bool found = false;
-                for(int p = 0; p<people[u].points.size();p++){
-                    if(!found){
-                        int x2 = people[u].points[p].x;
-                        int y2 = people[u].points[p].y;
-                        int dist =1/b2InvSqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2));
-                        if(dist<customParticles[i]->getRadius()*1.5){
-                            found = true;
-                            customParticles[i]->addRepulsionForce(people[u].centroid, b2dRepulsion);
+                if(!found && abs(x1-people[u].centroid.x)<400){
+                    for(int p = 0; p<people[u].points.size();p++){
+                        if(!found){
+                            int x2 = people[u].points[p].x;
+                            int y2 = people[u].points[p].y;
+                            int dist =1/b2InvSqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2));
+                            if(dist<customParticles[i]->getRadius()*1.5){
+                                found = true;
+                                customParticles[i]->addRepulsionForce(people[u].centroid, b2dRepulsion);
+                            }
                         }
                     }
                 }
@@ -685,10 +591,7 @@ void ofApp::update(){
             itr++;
         
         }
-        ofNoFill();
-        for(auto s:sounds){
-            ofDrawCircle(s.pos,20);
-        }
+
         
         
     }
@@ -711,18 +614,7 @@ void ofApp::draw(){
     {
          gui.draw();
     }
-    ofTranslate(250,10);
-    ofSetColor(0, 255, 255);
-    ofDrawBitmapString("Number keys toggle effects, mouse rotates scene", 10, 20);
-    for (unsigned i = 0; i < post.size(); ++i)
-    {
-        if (post[i]->getEnabled()) ofSetColor(0, 255, 255);
-        else ofSetColor(255, 0, 0);
-        ostringstream oss;
-        oss << i << ": " << post[i]->getName() << (post[i]->getEnabled()?" (on)":" (off)");
-        ofDrawBitmapString(oss.str(), 10, 20 * (i + 2));
-    }
-    ofSetColor(255);
+
 
 }
 
@@ -737,8 +629,6 @@ void ofApp::keyPressed(int key){
         }
     }
 
-    unsigned idx = key - '0';
-    if (idx < post.size()) post[idx]->setEnabled(!post[idx]->getEnabled());
 
 }
 

@@ -3,12 +3,12 @@
 #include "ofMain.h"
 #include "ofxOsc.h"
 #include "ofxGui.h"
-#include "ofxCv.h"
+//#include "ofxCv.h"
 #include "ofxAutoReloadedShader.h"
 #include "ofxSyphon.h"
 #include "ofxBox2d.h"
 #include "defines.h"
-#include "ofxPostProcessing.h"
+//#include "ofxPostProcessing.h"
 #include "animalPng.h"
 #include "swarmParticle.h"
 #include "binnedSystem.h"
@@ -111,12 +111,6 @@ public:
     
 };
 
-struct soundParticle{
-    public:
-    ofVec2f pos;
-    string name;
-    bool toggle;
-};
 
 class ofApp : public ofBaseApp{
 
@@ -140,10 +134,9 @@ class ofApp : public ofBaseApp{
     vector<ofxOscReceiver>receivers;
     vector<vector<ofPolyline>>blobs;
     
-    vector<soundParticle>sounds;
     vector<AnimalPng>animals;
     int binnedReset;
-    bool					drawGui;
+    bool		drawGui;
     bool bDebug = true;
     bool useB2d = true;
     
@@ -194,7 +187,7 @@ class ofApp : public ofBaseApp{
     ofxBox2d                             box2d;
     vector <shared_ptr<CustomParticle> > customParticles;
     vector <shared_ptr<MovingSoundParticle> > movingSounds;
-    vector <shared_ptr<ofxBox2dPolygon> > polyShapes;
+
     
     // swarm mesh and vbo
     ofMesh mesh;
@@ -216,6 +209,6 @@ class ofApp : public ofBaseApp{
         x = x * (1.5f - xhalf * x * x);
         return x;
     }
-    ofxPostProcessing post;
+
     vector<ofColor>fazerColors; 
 };

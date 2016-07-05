@@ -11,18 +11,11 @@
 #ifndef animalPng_h
 #define animalPng_h
 
-#include "ofxImageSequence.h"
 
 class AnimalPng{
     
 public:
-    
-    ofxImageSequence imgSeq;
-    
-    int totalNumFrames=0;
-    float thisFrame = 0;
-    
-    int   appFPS;
+
     float sequenceFPS;
     bool  bFrameIndependent;
     vector <ofImage> images;
@@ -92,3 +85,88 @@ public:
 
 };
 #endif /* animalPng_h */
+
+/*
+ //
+ //  animalPng.h
+ //  blueParticles_Fazer
+ //
+ //  Created by FazerPro on 05/07/16.
+ //
+ //
+ 
+ 
+ 
+ #ifndef animalPng_h
+ #define animalPng_h
+ 
+ 
+ class AnimalPng{
+ 
+ public:
+ 
+ 
+ 
+ int   appFPS;
+ float sequenceFPS;
+ bool  bFrameIndependent;
+ // vector <ofImage> images;
+ vector <ofPixels> pix;
+ ofVec2f pos;
+ int w,h;
+ bool playing;
+ void setup(string _path, ofVec2f _pos){
+ 
+ ofDirectory dir;
+ 
+ int nFiles = dir.listDir(_path);
+ if(nFiles) {
+ 
+ for(int i=0; i<dir.size(); i++) {
+ 
+ // add the image to the vector
+ string filePath = dir.getPath(i);
+ //                images.push_back(ofImage());
+ //                images.back().load(filePath);
+ ofPixels p;
+ pix.push_back(p);
+ ofLoadImage(pix.back(),filePath);
+ }
+ 
+ }
+ else ofLog(OF_LOG_WARNING) << "Could not find folder";
+ 
+ // this toggle will tell the sequence
+ // be be indepent of the app fps
+ bFrameIndependent = true;
+ 
+ // this will set the speed to play
+ // the animation back we set the
+ // default to 24fps
+ sequenceFPS = 24;
+ 
+ 
+ 
+ }
+ 
+ void update(){
+ 
+ }
+ 
+ void draw(ofVec2f _pos, int r){
+ 
+ 
+ uint64_t frameIndex = 0;
+ frameIndex = (int)(ofGetElapsedTimef() * sequenceFPS) % pix.size();
+ 
+ ofTexture tex;
+ ofImage img;
+ img.setFromPixels(pix[frameIndex]);
+ img.draw(_pos.x-(r*1.5)+2,_pos.y-(r*1.5)+2, r*3 , r*3);
+ }
+ 
+ 
+ 
+ };
+ #endif /* animalPng_h */
+
