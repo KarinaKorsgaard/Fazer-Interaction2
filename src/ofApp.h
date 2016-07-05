@@ -9,7 +9,7 @@
 #include "ofxBox2d.h"
 #include "defines.h"
 #include "ofxPostProcessing.h"
-#include "animal.h"
+#include "animalPng.h"
 #include "swarmParticle.h"
 #include "binnedSystem.h"
 #include "person.h"
@@ -107,7 +107,12 @@ public:
         if(vel.length()>4)setVelocity(vel*0.8);
         
     }
-    
+    void draw(ofPixels img){
+        ofVec2f p= getPosition();
+        ofTexture tex;
+        tex.setFromPixels(img);
+        tex.draw(p.x-4*getRadius()/2,p.y-4*getRadius()/2, 4*getRadius(),4*getRadius() );
+    }
     
 };
 
@@ -141,7 +146,7 @@ class ofApp : public ofBaseApp{
     vector<vector<ofPolyline>>blobs;
     
     vector<soundParticle>sounds;
-    vector<Animal>animals;
+    vector<AnimalPng>animals;
     int binnedReset;
     bool					drawGui;
     bool bDebug = true;
@@ -178,7 +183,7 @@ class ofApp : public ofBaseApp{
     binnedSystem backgroundCluster;
     
 
-    
+    vector<int>rCounters;
     ofxOscSender soundSender;
     bool soudoLine;
     ofFbo pointSplineFbo;

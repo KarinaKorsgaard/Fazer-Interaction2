@@ -179,7 +179,7 @@ void ofApp::setup(){
         
     }
 
-    for(int i = 0; i<13;i++){
+    for(int i = 0; i<7;i++){
         for(int u = 0; u<3;u++){
             movingSounds.push_back(shared_ptr<MovingSoundParticle>(new MovingSoundParticle));
             MovingSoundParticle * p = movingSounds.back().get();
@@ -218,24 +218,39 @@ void ofApp::setup(){
         clusters.back().vbo.setNormalData(&colorMesh.getVertices()[0], (int)num, GL_STATIC_DRAW);
     }
     
+//    string path = "animals";
+//    ofDirectory dir(path);
+//
+//    dir.allowExt("mov");
+//    dir.listDir();
+//    
+//    for(int i = 0; i<dir.size();i+=2){
+//        Animal ani = *new Animal;
+//        ani.setup(ofVec2f(ofRandom(100,RES_W-100),ofRandom(100,RES_H-100)),"/ani/"+ofToString(int(i/2),0),dir.getPath(i+1),dir.getPath(i),&people);
+//        //if(i<1)ani.track=true;
+//        animals.push_back(ani);
+//    }
+    
     string path = "animals";
     ofDirectory dir(path);
-
-    dir.allowExt("mov");
+    
+    //dir.allowExt("mov");
     dir.listDir();
     
-    for(int i = 0; i<dir.size();i+=2){
-        Animal ani = *new Animal;
-       // ani.setup(ofVec2f(ofRandom(100,RES_W-100),ofRandom(100,RES_H-100)),"/ani/"+ofToString(int(i/2),0),dir.getPath(i+1),dir.getPath(i),&people);
+    for(int i = 0; i<dir.size();i++){
+        AnimalPng ani = *new AnimalPng;
+        ani.setup(dir.getPath(i),ofVec2f(200,200));
         //if(i<1)ani.track=true;
-        //animals.push_back(ani);
+        animals.push_back(ani);
+        
+        cout<<dir.getPath(i);
     }
 
     soundSender.setup("localhost",3000);
     drawGui = true;
     bDebug = true;
     attractPoints.resize(4);
-    
+    rCounters.resize(4);
     syphon.setName("FazerParticles");
    // ofSetFrameRate(30);
     ofSetVerticalSync(true);
@@ -257,6 +272,8 @@ void ofApp::update(){
 
 
     for(int r = 0; r<receivers.size();r++){
+        for(int i = 0; i<rCounters.size();i++)rCounters[i]++;
+        
         while(receivers[r].hasWaitingMessages()){
             
             
@@ -270,6 +287,7 @@ void ofApp::update(){
                     blobs[r][i].clear();
                     
                 }
+                rCounters[r]=0;
             }
             
             if(msg.getNumArgs()>3){
@@ -294,6 +312,12 @@ void ofApp::update(){
         }
     }
     
+    //if no incoming, clear blobs
+    for(int i = 0; i<rCounters.size();i++){
+        if(rCounters[i]>200){
+            for(int u = 0; u<blobs[i].size();u++)blobs[i][u].clear();
+        }
+    }
     
    // add random blob
     if(soudoLine){
@@ -386,23 +410,23 @@ void ofApp::update(){
         for(int i = 0 ; i< animals.size();i++){
             animals[i].update();
             
-            if(animals[i].idle && !animals[i].beginSequence){
-                if(ofRandom(10)<0.05){
-                    animals[i].touched = true;
-                    animals[i].sendOsc = true;
-                    animals[i].still->setPaused(true);
-                    animals[i].count = 0;
-                    animals[i].beginSequence=true;
-                }
-            }
-            
-            if(animals[i].sendOsc){
-                animals[i].sendOsc=false;
-                ofxOscMessage m;
-                m.setAddress(animals[i].oscAddress);
-                m.addIntArg(1);
-                soundSender.sendMessage(m);
-            }
+//            if(animals[i].idle && !animals[i].beginSequence){
+//                if(ofRandom(10)<0.05){
+//                    animals[i].touched = true;
+//                    animals[i].sendOsc = true;
+//                    animals[i].still->setPaused(true);
+//                    animals[i].count = 0;
+//                    animals[i].beginSequence=true;
+//                }
+//            }
+//            
+//            if(animals[i].sendOsc){
+//                animals[i].sendOsc=false;
+//                ofxOscMessage m;
+//                m.setAddress(animals[i].oscAddress);
+//                m.addIntArg(1);
+//                soundSender.sendMessage(m);
+//            }
         }
     }
     
@@ -585,18 +609,27 @@ void ofApp::update(){
     ofSetColor(255);
     ofEnableAlphaBlending();
 
-    if(cluster||swarm||drawAnimals){
-    ofSetColor(255);
-    textureShader.begin();
-    textureShader.setUniformTexture("tex0", texture, 0);
-    textureShader.setUniformTexture("tex1", pointSplineFbo.getTexture(), 1);
+    if(cluster||swarm){
+//    ofSetColor(255);
+//    textureShader.begin();
+//    textureShader.setUniformTexture("tex0", texture, 0);
+//    textureShader.setUniformTexture("tex1", pointSplineFbo.getTexture(), 1);
     pointSplineFbo.draw(0,0);
-    textureShader.end();
+//    textureShader.end();
+    }
+    if(drawAnimals){
+        int itr = 0;
+        for(int i = 0; i<movingSounds.size();i++){
+
+            movingSounds[i]->draw(animals[itr].imagesPix[animals[itr].thisFrame/2]);
+            itr ++;
+            itr=itr%animals.size();
+        }
     }
     if(bDebug){
         
      
-             ofSetLineWidth(10);
+        ofSetLineWidth(10);
         int k1 = offSet1X + ((RES_W/4)*scale1 /2);
         int k2 = offSet1X;
         int k3 =(RES_W/4)*scale1 + offSet1X;

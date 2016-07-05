@@ -56,9 +56,9 @@
 		<cluster_color>82, 81, 102, 255</cluster_color>
 	<swarmnBox2dColor>106, 102, 119, 255</swarmnBox2dColor>
 	<scale1>1.94898</scale1>
-		<numAttraction>28</numAttraction>
+		<numAttraction>40</numAttraction>
 		<one>
-			<offSet1X>94.0806</offSet1X>
+			<offSet1X>76.4368</offSet1X>
 			<offSet1Y>-500</offSet1Y>
 		</one>
 		<two>

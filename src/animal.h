@@ -49,7 +49,7 @@ public:
         moving->load(_moving);
         
         still->setLoopState(OF_LOOP_NORMAL);
-        moving->setLoopState(OF_LOOP_NONE);
+        moving->setLoopState(OF_LOOP_NORMAL);
         w = still->getWidth()*0.4;
         h = still->getHeight()*0.4;
         pos = _pos;
@@ -58,14 +58,14 @@ public:
         people = _peeps;
         
         still->play();
-
+        moving->play();
     }
     
     void update(){
         idleCounter++;
         isOn = false;
         sendOsc= false;
-        
+        touched=false;
 
         if(!beginSequence){
             for(int i = 0 ; i<people->size();i++){
@@ -75,67 +75,68 @@ public:
                         if(dist(pos,p)<50){
                             isOn = true;
                             idleCounter = 0;
+                            touched=true;
                         }
                     }
                 }
             }
         }
-        if(idleCounter>1000)idle = true;
-        
-        if(isOn && !beginSequence){
-            beginSequence = true;
-            touched = true;
-            sendOsc = true;
-            still->setPaused(true);
-            if(track)cout<<"begin"<<endl;
-            count = 0;
-        }
-
-        if(beginSequence){
-            if(!expand){
-                expand = true;
-                moving->setPaused(false);
-                //moving->setFrame(0);
-                moving->setSpeed(1);
-                moving->play();
-                if(track)cout<<"expand"<<endl;
-            }
-
-            if(expand && !moving->isPlaying() && !contract && !countDown){
-                countDown = true;
-                moving->setPaused(true);
-                if(track)cout<<"hiding"<<endl;
-                //expand = false;
-            }
-            
-            if(countDown){
-                count++;
-                if(count>thres){
-                    countDown = false;
-                    contract = true;
-                    moving->setPaused(false);
-                   // moving->setFrame(moving->getTotalNumFrames());
-                    moving->setSpeed(-1);
-                    moving->play();
-                    if(track)cout<<"reappear"<<endl;
-                    pos = ofVec2f(ofRandom(200,RES_W-200),ofRandom(200,RES_H-200));
-                }
-            }
-            if(contract && !moving->isPlaying()){
-                idleCounter = 0;
-                contract = false;
-                idle = false;
-                expand = false;
-                still->setPaused(false);
-                touched = false;
-                countDown = false;
-                moving->setPaused(true);
-                beginSequence = false;
-                if(track)cout<<"stop"<<endl;
-
-            }
-        }
-    
+//        if(idleCounter>1000)idle = true;
+//        
+//        if(isOn && !beginSequence){
+//            beginSequence = true;
+//            touched = true;
+//            sendOsc = true;
+//            still->setPaused(true);
+//            if(track)cout<<"begin"<<endl;
+//            count = 0;
+//        }
+//
+//        if(beginSequence){
+//            if(!expand){
+//                expand = true;
+//                moving->setPaused(false);
+//                //moving->setFrame(0);
+//                moving->setSpeed(1);
+//                moving->play();
+//                if(track)cout<<"expand"<<endl;
+//            }
+//
+//            if(expand && !moving->isPlaying() && !contract && !countDown){
+//                countDown = true;
+//                moving->setPaused(true);
+//                if(track)cout<<"hiding"<<endl;
+//                //expand = false;
+//            }
+//            
+//            if(countDown){
+//                count++;
+//                if(count>thres){
+//                    countDown = false;
+//                    contract = true;
+//                    moving->setPaused(false);
+//                   // moving->setFrame(moving->getTotalNumFrames());
+//                    moving->setSpeed(-1);
+//                    moving->play();
+//                    if(track)cout<<"reappear"<<endl;
+//                    pos = ofVec2f(ofRandom(200,RES_W-200),ofRandom(200,RES_H-200));
+//                }
+//            }
+//            if(contract && !moving->isPlaying()){
+//                idleCounter = 0;
+//                contract = false;
+//                idle = false;
+//                expand = false;
+//                still->setPaused(false);
+//                touched = false;
+//                countDown = false;
+//                moving->setPaused(true);
+//                beginSequence = false;
+//                if(track)cout<<"stop"<<endl;
+//
+//            }
+//        }
+//    
         
 
         still->update();
