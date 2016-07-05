@@ -156,7 +156,7 @@ void ofApp::setup(){
     
     int num = SWARM_NUM;
     ofMesh colorMesh;
-    int cIndx = 0;
+    int cIndx = 1;
     int fours = 0;
     
     for(unsigned int i = 0; i < num; i++){
@@ -175,10 +175,28 @@ void ofApp::setup(){
         ///pointSizes.push_back(r);
         
         colorMesh.addVertex(ofVec3f(fazerColors[cIndx].r,fazerColors[cIndx].g,fazerColors[cIndx].b));
-        cIndx = i%fazerColors.size();
+        cIndx = (i%(fazerColors.size()-1)) +1;
         
     }
-    vbo.setNormalData(&colorMesh.getVertices()[0], (int)SWARM_NUM, GL_STATIC_DRAW);
+
+    for(int i = 0; i<13;i++){
+        for(int u = 0; u<3;u++){
+            movingSounds.push_back(shared_ptr<MovingSoundParticle>(new MovingSoundParticle));
+            MovingSoundParticle * p = movingSounds.back().get();
+            float r = ofRandom(30,55);		// a random radius 4px - 20px
+            p->setPhysics(ofRandom(0.1,5), ofRandom(0.1,0.5) ,0);
+            p->setup(box2d.getWorld(), ofRandom(RES_W), ofRandom(RES_H), r);
+            p->radius=p->getRadius();
+            p->setVelocity(ofRandom(-0.5,0.5), ofRandom(-0.5,0.5));
+            p->attractionPoint = ofVec2f(RES_W/2,RES_H/2);
+            p->num = 0;
+            p->name = "/"+ofToString(i)+"/"+ofToString(u);
+            colorMesh.addVertex(ofVec3f(fazerColors[0].r,fazerColors[0].g,fazerColors[0].b));
+        }
+    }
+    int total = SWARM_NUM+movingSounds.size();
+    
+    vbo.setNormalData(&colorMesh.getVertices()[0], (int)total, GL_STATIC_DRAW);
     
 
     colorMesh.clear();
@@ -208,25 +226,11 @@ void ofApp::setup(){
     
     for(int i = 0; i<dir.size();i+=2){
         Animal ani = *new Animal;
-        ani.setup(ofVec2f(i*200+200,RES_H/2),"/ani/"+ofToString(int(i/2),0),dir.getPath(i),dir.getPath(i+1),&people);
-        animals.push_back(ani);
+       // ani.setup(ofVec2f(ofRandom(100,RES_W-100),ofRandom(100,RES_H-100)),"/ani/"+ofToString(int(i/2),0),dir.getPath(i+1),dir.getPath(i),&people);
+        //if(i<1)ani.track=true;
+        //animals.push_back(ani);
     }
-    
 
-    
-    int stepX = RES_W/13;
-    int stepY = RES_H/4;
-    for(int i = 0 ; i< 13 ; i++){
-        int mod = 0;
-        for(int u = 0; u<3;u++){
-            soundParticle s = *new soundParticle ;
-            mod = i%2;
-            s.pos =ofVec2f(i*stepX + stepX/2, u*stepY+mod*100+100);
-            s.toggle = false;
-            s.name = "/"+ofToString(i)+"/"+ofToString(u);
-            sounds.push_back(s);
-        }
-    }
     soundSender.setup("localhost",3000);
     drawGui = true;
     bDebug = true;
@@ -349,99 +353,55 @@ void ofApp::update(){
         }
     }
     
+
+    
+//    for(int i = 0; i<sounds.size();i++){
 //
-//
-//    for(int i = 0; i<attractPoints.size();i++ )attractPoints[i].clear();
-//    
-//    centroids.clear();
-//    
-//    vector<int>overLaps;
-//    overLaps={0,overLap1,overLap2,overLap3};
-//    int numBlobs=0;
-//    for(int i = 0; i<blobs.size();i++){
-//        for(int u = 0; u<blobs[i].size();u++){
-//            
-//            ofPolyline p=blobs[i][u];
-//            numBlobs++;
-//            if(p.size()>0){
-//                centroids.push_back(p.getCentroid2D());
-//                attractPoints[i].push_back(p.getCentroid2D());
-//                for( int pt = 0; pt < p.getVertices().size(); pt++) {
-//                    int x = p.getVertices().at(pt).x;
-//                    if(x>0&&x<RES_W){
-//                    int aNum = int(ofMap(x, 0, RES_W, 0, 4));
-//                   
-//                   // if(x>overLaps[i]+ofsetlistX[i])
-//                        attractPoints[aNum].push_back(p.getVertices().at(pt));
+//        bool on = false;
+//        for(int u = 0; u<people.size();u++){
+//            // for(int i = 0; i< sounds.size();i++){
+//            if(!on){
+//                if(abs(people[u].centroid.x - sounds[i].pos.x)<RES_W/6){
+//                    if( insidePolygon(sounds[i].pos, people[u].poly)){
+//                        on=true;
 //                    }
 //                }
 //            }
+//        }
+//        
+//        
+//        if(on && !sounds[i].toggle){
+//            ofxOscMessage m;
+//            m.setAddress(sounds[i].name);
+//            m.addInt32Arg(1);
+//            soundSender.sendMessage(m);
+//            sounds[i].toggle=true;
+//        }
+//        if(!on && sounds[i].toggle){
+//            sounds[i].toggle = false;
 //        }
 //    }
-    
-    for(int i = 0; i<sounds.size();i++){
-//        bool on = false;
-//        int iter = 0;
-//        
-//        for(int a = 0; a<blobs.size();a++){
-//            for(int b = 0; b<blobs[a].size();b++){
-//                
-//                ofPolyline p=blobs[a][b];
-//                if(p.size()>0){
-//                    
-//                    if(abs(centroids[iter].x - sounds[i].pos.x)<RES_W/6){
-//                        
-//                        if( insidePolygon(sounds[i].pos, p)){
-//                            on=true;
-//                        }
-//                    }
-//                    iter ++;
-//                }
-//            }
-//        }
-        
-
-        bool on = false;
-        for(int u = 0; u<people.size();u++){
-            // for(int i = 0; i< sounds.size();i++){
-            if(!on){
-                if(abs(people[u].centroid.x - sounds[i].pos.x)<RES_W/6){
-                    if( insidePolygon(sounds[i].pos, people[u].poly)){
-                        on=true;
-                    }
-                }
-            }
-        }
-        
-        
-        if(on && !sounds[i].toggle){
-            ofxOscMessage m;
-            m.setAddress(sounds[i].name);
-            m.addInt32Arg(1);
-            soundSender.sendMessage(m);
-            sounds[i].toggle=true;
-        }
-        if(!on && sounds[i].toggle){
-            sounds[i].toggle = false;
-        }
-    }
     
     if(drawAnimals){
         for(int i = 0 ; i< animals.size();i++){
             animals[i].update();
+            
+            if(animals[i].idle && !animals[i].beginSequence){
+                if(ofRandom(10)<0.05){
+                    animals[i].touched = true;
+                    animals[i].sendOsc = true;
+                    animals[i].still->setPaused(true);
+                    animals[i].count = 0;
+                    animals[i].beginSequence=true;
+                }
+            }
+            
             if(animals[i].sendOsc){
+                animals[i].sendOsc=false;
                 ofxOscMessage m;
                 m.setAddress(animals[i].oscAddress);
                 m.addIntArg(1);
                 soundSender.sendMessage(m);
-            }
-            for(int u = i+1; u<animals.size();u++){
-                if(abs(animals[u].pos.x-animals[i].pos.x )<280){
-                    ofVec2f v = animals[u].vel;
-                    animals[u].vel = animals[i].vel;
-                    animals[i].vel = v;
-                   // animals[i].vel.x *=-1;
-                }
             }
         }
     }
@@ -454,21 +414,6 @@ void ofApp::update(){
             int x1 = customParticles[i]->getPosition().x;
             int y1 = customParticles[i]->getPosition().y;
             
-            if(drawAnimals){
-                // repel from animals, version shit
-                for(int u = 0 ; u<animals.size();u++){
-                    if(!animals[u].touched){
-                        int x2 = animals[u].pos.x ;
-                        int y2 = animals[u].pos.y ;
-                        
-                        if(1/b2InvSqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2))<200){
-                            customParticles[i]->addRepulsionForce(animals[u].pos ,b2dRepulsion*2);
-                        }
-                    }
-                }
-            }
-
-            
             for(int u = 0; u<people.size();u++){
                 bool found = false;
                 for(int p = 0; p<people[u].points.size();p++){
@@ -476,7 +421,7 @@ void ofApp::update(){
                         int x2 = people[u].points[p].x;
                         int y2 = people[u].points[p].y;
                         int dist =1/b2InvSqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2));
-                        if(dist<customParticles[i]->getRadius()){
+                        if(dist<customParticles[i]->getRadius()*1.5){
                             found = true;
                             customParticles[i]->addRepulsionForce(people[u].centroid, b2dRepulsion);
                         }
@@ -487,8 +432,49 @@ void ofApp::update(){
             mesh.addVertex(ofVec3f(float(customParticles[i]->getPosition().x),float(customParticles[i]->getPosition().y),customParticles[i]->getRadius()));
             
         }
+        for(int i = 0; i<movingSounds.size();i++){
+            movingSounds[i]->toggle = false;
+            if(!movingSounds[i]->animateRadius){
+                
+            int x1 = movingSounds[i]->getPosition().x;
+            int y1 = movingSounds[i]->getPosition().y;
+
+            
+                for(int u = 0; u<people.size();u++){
+                    bool found = false;
+                    for(int p = 0; p<people[u].points.size();p++){
+                        if(!found){
+                            int x2 = people[u].points[p].x;
+                            int y2 = people[u].points[p].y;
+                            int dist =1/b2InvSqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2));
+                            if(dist<sNear){
+                                found = true;
+                                movingSounds[i]->animateRadius=true;
+                                movingSounds[i]->toggle = true;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            movingSounds[i]->update();
+            mesh.addVertex(ofVec3f(float(movingSounds[i]->getPosition().x),float(movingSounds[i]->getPosition().y),movingSounds[i]->getRadius()));
+            
+
+            if(movingSounds[i]->toggle){
+                ofxOscMessage m;
+                m.setAddress(movingSounds[i]->name);
+                m.addInt32Arg(1);
+                soundSender.sendMessage(m);
+                movingSounds[i]->toggle=false;
+            }
+
+        
+        }
+    
+        int total = SWARM_NUM+movingSounds.size();
         box2d.update();
-        vbo.setVertexData(&mesh.getVertices()[0], SWARM_NUM, GL_STATIC_DRAW);
+        vbo.setVertexData(&mesh.getVertices()[0], total, GL_STATIC_DRAW);
     }
 
     
@@ -505,7 +491,6 @@ void ofApp::update(){
             else clusters[i].centerAttraction = cAttraction;
         }
     }
-
 
 
     //pointspline replacement
@@ -547,11 +532,8 @@ void ofApp::update(){
         }
 
         ofDisableBlendMode();
-        ofDisableBlendMode();
         ofEnableAlphaBlending();
 
-        
-        pointSpline.begin();
         if(swarm){
             if(evenColor)pointSpline.setUniform1f("evenColor", 1.);
             else pointSpline.setUniform1f("evenColor", 0.);
@@ -560,26 +542,36 @@ void ofApp::update(){
             else pointSpline.setUniform1f("addthis", 2.);
             
             int cIndex = 0;
-            // bind the texture so that when all the points
-            // are drawn they are replace with our dot image
-            // pointSpline.setUniform3f("col", float(swarmColor->r), float(swarmColor->g), float(swarmColor->b));
-            // if(!evenColor)pointSpline.setUniform3f("col", float(fazerColors[cIndex].r), float(fazerColors[cIndex].g), float(fazerColors[cIndex].b));
-            
             if(!fluidcolor)pointSpline.setUniform3f("col", float(swarmColor->r), float(swarmColor->g), float(swarmColor->b));
             if(fluidcolor)pointSpline.setUniform3f("col", float(clusterRange2->r), float(clusterRange2->g), float(clusterRange2->b));
             
             if(!blurImg) solid.bind();
             else sparkImg.bind();
-            vbo.draw(GL_POINTS, 0, (int)SWARM_NUM);
+            vbo.draw(GL_POINTS, 0, int(SWARM_NUM+movingSounds.size()));
             if(!blurImg) solid.unbind();
             else sparkImg.unbind();
             
         }
         
         pointSpline.end();
-        pointSplineFbo.end();
         glDepthMask(GL_TRUE);
         ofDisablePointSprites();
+        
+        ofEnableBlendMode(OF_BLENDMODE_ADD);
+        for(int i = 0; i<movingSounds.size();i++){
+            if(movingSounds[i]->animateRadius){
+                int r = movingSounds[i]->getRadius();
+                int oR = movingSounds[i]->radius;
+                ofSetColor(fazerColors[0]);
+                ofDrawCircle(movingSounds[i]->getPosition(),r+2);
+            }
+        }
+        
+        pointSplineFbo.end();
+
+        
+        
+        
         ofDisableBlendMode();
 
         

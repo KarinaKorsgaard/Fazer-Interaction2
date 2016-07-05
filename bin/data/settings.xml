@@ -46,7 +46,7 @@
 		<bounce>0</bounce>
 		<friction>0</friction>
 	<b2dRepulsion>10</b2dRepulsion>
-	<drawAnimals>0</drawAnimals>
+	<drawAnimals>1</drawAnimals>
 	<blurImg_cluster>0</blurImg_cluster>
 	<uniform_Color_swarm>0</uniform_Color_swarm>
 	</visuals>
@@ -67,12 +67,12 @@
 			<overLap1>0</overLap1>
 		</two>
 		<three>
-			<offSet3X>3289</offSet3X>
+			<offSet3X>1523.22</offSet3X>
 			<offSet3Y>-473.553</offSet3Y>
 			<overLap2>0</overLap2>
 		</three>
 		<four>
-			<offSet4X>3289</offSet4X>
+			<offSet4X>2017.24</offSet4X>
 			<offSet4Y>-348.605</offSet4Y>
 			<overLap3>0</overLap3>
 		</four>

@@ -46,7 +46,7 @@
 		<bounce>0</bounce>
 		<friction>0</friction>
 	<b2dRepulsion>10</b2dRepulsion>
-	<drawAnimals>0</drawAnimals>
+	<drawAnimals>1</drawAnimals>
 	<blurImg_cluster>0</blurImg_cluster>
 	<uniform_Color_swarm>0</uniform_Color_swarm>
 	</visuals>

@@ -5,7 +5,7 @@ void main() {
 
     
     gl_Position   = gl_ModelViewProjectionMatrix *vec4(gl_Vertex.x,gl_Vertex.y,0.,1. );
-    gl_PointSize   = gl_Vertex.z  *addthis ;
+    gl_PointSize   = gl_Vertex.z  * addthis ;
    // gl_Vertex.z=1.;
     
     //gl_Position +=0.;
@@ -18,7 +18,7 @@ void main() {
         col =gl_Color*vec4(vec3(1.),0.5);
     }else{
         vec3 c = gl_Normal / 255.;
-        col =gl_Color*vec4(vec3(c),1.5);
+        col =gl_Color*vec4(vec3(c),1.);
     }
     
   

@@ -31,11 +31,14 @@ public:
 
     bool beginSequence = false;
     bool isOn = false;
-    bool contract = false;
     bool expand = false;
-    bool resetForContract = false;
-    
+    bool countDown = false;
+    int thres = 200;
+    int count = 0;
     bool track = false;
+    bool contract = false;
+    bool idle = false;
+    int idleCounter;
     ofVec2f acc;
 //    shared_ptr<ofxBox2dPolygon> b2dPoly;
 
@@ -44,124 +47,102 @@ public:
         moving = new ofVideoPlayer;
         still->load(_still);
         moving->load(_moving);
-
-        
         
         still->setLoopState(OF_LOOP_NORMAL);
         moving->setLoopState(OF_LOOP_NONE);
-        w = still->getWidth();
-        h = still->getHeight();
+        w = still->getWidth()*0.4;
+        h = still->getHeight()*0.4;
         pos = _pos;
-        
-      // if(pos.x<210)track=true;
         oscAddress = _oscAddress;
         touched = false;
         people = _peeps;
-        radius = 150;
-        //vel = ofVec2f(ofRandom(-2,2), ofRandom(-0.5,0.5));
-        //if(vel.x<0.4)vel.x = 2;
-       // acc = ofVec2f(ofRandom(-1,1),-0.8);
+        
+        still->play();
+
     }
     
     void update(){
+        idleCounter++;
         isOn = false;
         sendOsc= false;
+        
 
-        int region =0;
-        region = int(ofMap(pos.x,0,RES_W,0,4));
-        for(int i = 0 ; i<people->size();i++){
-            for(int u = 0 ; u<people->at(i).points.size();u++){
-                if(!isOn){
-                    ofPoint p = people->at(i).points[u];
-                    if(dist(pos,p)<50){
-                        isOn = true;
+        if(!beginSequence){
+            for(int i = 0 ; i<people->size();i++){
+                for(int u = 0 ; u<people->at(i).points.size();u++){
+                    if(!isOn){
+                        ofPoint p = people->at(i).points[u];
+                        if(dist(pos,p)<50){
+                            isOn = true;
+                            idleCounter = 0;
+                        }
                     }
                 }
             }
         }
+        if(idleCounter>1000)idle = true;
         
         if(isOn && !beginSequence){
             beginSequence = true;
             touched = true;
-            sendOsc= true;
-            moving->setFrame(0);
-            bool contract = false;
-            bool expand = false;
+            sendOsc = true;
             still->setPaused(true);
-            
             if(track)cout<<"begin"<<endl;
+            count = 0;
         }
 
         if(beginSequence){
             if(!expand){
                 expand = true;
+                moving->setPaused(false);
+                //moving->setFrame(0);
                 moving->setSpeed(1);
                 moving->play();
                 if(track)cout<<"expand"<<endl;
             }
-            
-            if(expand &&  !moving->isPlaying() && !resetForContract){
-                resetForContract = true;
-                moving->setFrame(120);
+
+            if(expand && !moving->isPlaying() && !contract && !countDown){
+                countDown = true;
                 moving->setPaused(true);
-                if(track)cout<<"limbo"<<endl;
-                // moving->setPaused(true);
-               // if(track)cout<<"limbo"<<endl;
+                if(track)cout<<"hiding"<<endl;
+                //expand = false;
             }
             
-            if(expand && !isOn && !contract){
-               // expand = false;
-                contract = true;
-                moving->setPaused(false);
-                moving->setSpeed(-1);
-                moving->play();
-                if(track)cout<<"contract"<<endl;
+            if(countDown){
+                count++;
+                if(count>thres){
+                    countDown = false;
+                    contract = true;
+                    moving->setPaused(false);
+                   // moving->setFrame(moving->getTotalNumFrames());
+                    moving->setSpeed(-1);
+                    moving->play();
+                    if(track)cout<<"reappear"<<endl;
+                    pos = ofVec2f(ofRandom(200,RES_W-200),ofRandom(200,RES_H-200));
+                }
             }
-            
-            if(contract && isOn){
-                contract = false;
-                expand = true;
-                resetForContract = false;
-                moving->setSpeed(1);
-                if(track)cout<<"re-expand"<<endl;
-            }
-            
             if(contract && !moving->isPlaying()){
+                idleCounter = 0;
                 contract = false;
+                idle = false;
                 expand = false;
-                beginSequence = false;
-                touched = false;
                 still->setPaused(false);
-                resetForContract=false;
+                touched = false;
+                countDown = false;
+                moving->setPaused(true);
+                beginSequence = false;
                 if(track)cout<<"stop"<<endl;
+
             }
         }
     
         
-        
-//        if(!touched) still->update();
-//        else moving->update();
-                still->update();
-                moving->update();
+
+        still->update();
+        moving->update();
 
         
-        // move : borders:
-        int lim =150;
-        if( pos.x > RES_W-lim ){
-            pos.x = RES_W-lim;
-            vel.x *= -1;
-        }else if( pos.x < lim ){
-            pos.x = lim;
-            vel.x *= -1;
-        }
-        if( pos.y > RES_H-lim){
-            pos.y = RES_H-lim;
-            vel.y = -ofRandom(6);
-        }
 
-        
-        pos+=vel;
-        vel.y+=0.1;
     }
     
     void draw(){
@@ -170,16 +151,10 @@ public:
 
         ofSetColor(ofColor::white);
         if(!touched)still->draw(-w/2,-h/2,w,h);
-       // ofSetColor(ofColor::green);
         if(touched) moving->draw(-w/2,-h/2,w,h);
-    
-
-
 
         ofPopMatrix();
-        
 
-        
     }
     
     
