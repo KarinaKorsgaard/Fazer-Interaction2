@@ -107,12 +107,7 @@ public:
         if(vel.length()>4)setVelocity(vel*0.8);
         
     }
-    void draw(ofPixels img){
-        ofVec2f p= getPosition();
-        ofTexture tex;
-        tex.setFromPixels(img);
-        tex.draw(p.x-4*getRadius()/2,p.y-4*getRadius()/2, 4*getRadius(),4*getRadius() );
-    }
+
     
 };
 

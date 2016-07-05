@@ -30,6 +30,7 @@
 		214BE4931D0B108400919A5F /* opencv.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 214BE4851D0B108400919A5F /* opencv.a */; };
 		2156973A1D19CC9C00336E98 /* ofxBiquadFilter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 215697361D19CC9C00336E98 /* ofxBiquadFilter.cpp */; };
 		2156973B1D19CC9C00336E98 /* ofxBiquadFilterInstance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 215697381D19CC9C00336E98 /* ofxBiquadFilterInstance.cpp */; };
+		215FE9501D2BDA5900C9ED77 /* ofxImageSequence.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 215FE94E1D2BDA5900C9ED77 /* ofxImageSequence.cpp */; };
 		2193492D1D0F018600257892 /* ofxBox2d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 219348AC1D0F018600257892 /* ofxBox2d.cpp */; };
 		2193492E1D0F018600257892 /* ofxBox2dBaseShape.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 219348AE1D0F018600257892 /* ofxBox2dBaseShape.cpp */; };
 		2193492F1D0F018600257892 /* ofxBox2dCircle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 219348B01D0F018600257892 /* ofxBox2dCircle.cpp */; };
@@ -229,6 +230,8 @@
 		215697391D19CC9C00336E98 /* ofxBiquadFilterInstance.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxBiquadFilterInstance.h; sourceTree = "<group>"; };
 		215FE9471D25256500C9ED77 /* animal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = animal.h; sourceTree = "<group>"; };
 		215FE94A1D2A4FE800C9ED77 /* person.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = person.h; sourceTree = "<group>"; };
+		215FE94E1D2BDA5900C9ED77 /* ofxImageSequence.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxImageSequence.cpp; sourceTree = "<group>"; };
+		215FE94F1D2BDA5900C9ED77 /* ofxImageSequence.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxImageSequence.h; sourceTree = "<group>"; };
 		219348AC1D0F018600257892 /* ofxBox2d.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxBox2d.cpp; sourceTree = "<group>"; };
 		219348AD1D0F018600257892 /* ofxBox2d.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxBox2d.h; sourceTree = "<group>"; };
 		219348AE1D0F018600257892 /* ofxBox2dBaseShape.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxBox2dBaseShape.cpp; sourceTree = "<group>"; };
@@ -656,6 +659,24 @@
 			);
 			name = src;
 			path = ../../../addons/ofxBiquadFilter/src;
+			sourceTree = "<group>";
+		};
+		215FE94C1D2BDA5900C9ED77 /* ofxImageSequence */ = {
+			isa = PBXGroup;
+			children = (
+				215FE94D1D2BDA5900C9ED77 /* src */,
+			);
+			name = ofxImageSequence;
+			sourceTree = "<group>";
+		};
+		215FE94D1D2BDA5900C9ED77 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				215FE94E1D2BDA5900C9ED77 /* ofxImageSequence.cpp */,
+				215FE94F1D2BDA5900C9ED77 /* ofxImageSequence.h */,
+			);
+			name = src;
+			path = ../../../addons/ofxImageSequence/src;
 			sourceTree = "<group>";
 		};
 		219348AA1D0F018600257892 /* ofxBox2d */ = {
@@ -1163,6 +1184,7 @@
 				215697341D19CC9C00336E98 /* ofxBiquadFilter */,
 				21BED32F1D203CAA0006E61D /* ofxSvg */,
 				21A1D7BB1D22FBCF00D66230 /* ofxPostProcessing */,
+				215FE94C1D2BDA5900C9ED77 /* ofxImageSequence */,
 			);
 			name = addons;
 			sourceTree = "<group>";
@@ -1388,6 +1410,7 @@
 				5CBB2AB3A60F65431D7B555D /* ofxButton.cpp in Sources */,
 				214BE48D1D0B108400919A5F /* Kalman.cpp in Sources */,
 				2193493E1D0F018600257892 /* b2CircleShape.cpp in Sources */,
+				215FE9501D2BDA5900C9ED77 /* ofxImageSequence.cpp in Sources */,
 				B266578FC55D23BFEBC042E7 /* ofxGuiGroup.cpp in Sources */,
 				21A1D7F51D22FBCF00D66230 /* DofPass.cpp in Sources */,
 				483908258D00B98B4BE69F07 /* ofxLabel.cpp in Sources */,

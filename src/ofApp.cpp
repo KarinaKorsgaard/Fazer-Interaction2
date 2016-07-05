@@ -523,7 +523,7 @@ void ofApp::update(){
         ofClear(0, 0);
         ofEnableAlphaBlending();
         
-        if(drawAnimals)for(auto a: animals)a.draw();
+       // if(drawAnimals)for(auto a: animals)a.draw();
         
         pointSpline.begin();
         
@@ -620,8 +620,8 @@ void ofApp::update(){
     if(drawAnimals){
         int itr = 0;
         for(int i = 0; i<movingSounds.size();i++){
-
-            movingSounds[i]->draw(animals[itr].imagesPix[animals[itr].thisFrame/2]);
+            animals[itr].draw(movingSounds[i]->getPosition(),movingSounds[i]->getRadius());
+          //  movingSounds[i]->draw(animals[itr].imagesPix[animals[itr].thisFrame/2]);
             itr ++;
             itr=itr%animals.size();
         }

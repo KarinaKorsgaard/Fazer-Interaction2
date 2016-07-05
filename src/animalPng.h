@@ -6,46 +6,86 @@
 //
 //
 
+
+
 #ifndef animalPng_h
 #define animalPng_h
+
+#include "ofxImageSequence.h"
 
 class AnimalPng{
     
 public:
-    vector<ofImage>images;
-    vector<ofPixels>imagesPix;
+    
+    ofxImageSequence imgSeq;
+    
     int totalNumFrames=0;
     float thisFrame = 0;
+    
+    int   appFPS;
+    float sequenceFPS;
+    bool  bFrameIndependent;
+    vector <ofImage> images;
+    
     ofVec2f pos;
     int w,h;
-    
+    bool playing;
     void setup(string _path, ofVec2f _pos){
-        string path = _path;
-        ofDirectory dir(path);
         
-        dir.allowExt("png");
-        dir.listDir();
+        ofDirectory dir;
         
-        for(int i = 0; i<dir.size();i++){
-            ofPixels pix = *new ofPixels;
-            ofLoadImage(pix,dir.getPath(i));
-            imagesPix.push_back(pix);
-            totalNumFrames++;
+        int nFiles = dir.listDir(_path);
+        if(nFiles) {
+            
+            for(int i=0; i<dir.size(); i++) {
+                
+                // add the image to the vector
+                string filePath = dir.getPath(i);
+                images.push_back(ofImage());
+                images.back().load(filePath);
+                
+            }
+            
         }
-        totalNumFrames--;
-        if(images.size()>0){
-            w = images[0].getWidth();
-            h= images[0].getHeight();
-        }
+        else ofLog(OF_LOG_WARNING) << "Could not find folder";
+        
+        // this toggle will tell the sequence
+        // be be indepent of the app fps
+        bFrameIndependent = true;
+        
+        // this will set the speed to play
+        // the animation back we set the
+        // default to 24fps
+        sequenceFPS = 24;
+        
+
+
     }
     
     void update(){
-        
-        thisFrame=int(thisFrame+1)%((totalNumFrames*2));
+
     }
     
-    void draw(){
-        //imagesPix[int(thisFrame/2)].draw(pos, w,h);
+    void draw(ofVec2f _pos, int r){
+        
+        if((int)images.size() <= 0) {
+            ofSetColor(255);
+            ofDrawBitmapString("No Images...", 150, ofGetHeight()/2);
+            return;
+        }
+        
+        // this is the total time of the animation based on fps
+        //float totalTime = images.size() / sequenceFPS;
+        
+        uint64_t frameIndex = 0;
+        
+        if(bFrameIndependent) {
+            // calculate the frame index based on the app time
+            // and the desired sequence fps. then mod to wrap
+            frameIndex = (int)(ofGetElapsedTimef() * sequenceFPS) % images.size();
+        }
+        
+        images[frameIndex].draw(_pos.x-(r*1.5)+2,_pos.y-(r*1.5)+2, r*3 , r*3);
     }
     
 
