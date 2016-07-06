@@ -30,6 +30,6 @@
 
 // particle velocity : velocity can still get higher, it will just slow down high velocity particles a bit
 #define MIN_VEL 0.5
-#define MAX_VEL 4
+#define MAX_VEL 10
 
 #define CENTER_ATTRACTION 2 // attraction force on particles when outside of screen

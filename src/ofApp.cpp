@@ -68,7 +68,7 @@ void ofApp::setup(){
     }
 
     
-    pointSplineFbo.allocate(RES_W,RES_H);
+    pointSplineFbo.allocate(RES_W,RES_H+80);
     pointSplineFbo.begin();
     ofClear(0);
     pointSplineFbo.end();
@@ -122,16 +122,18 @@ void ofApp::setup(){
 
 
     for(unsigned int i = 0; i < SWARM_NUM; i++){
+        fours++;
+        fours = fours%2;
         customParticles.push_back(shared_ptr<CustomParticle>(new CustomParticle));
         CustomParticle * p = customParticles.back().get();
         float r = ofRandom(PARTICLES_MIN_RADIUS, PARTICLES_MAX_RADIUS);
         r = ofRandom(PARTICLES_MIN_RADIUS,r);
         //float density, float bounce, float friction
         p->setPhysics(ofRandom(0.1,5), ofRandom(0.1,0.5) ,0.1);
-        p->setup(box2d.getWorld(), ofRandom(RES_W), ofRandom(100,RES_H-100), r);
+        p->setup(box2d.getWorld(), ofRandom(RES_W), -10, r);
         p->radius=p->getRadius();
         p->setVelocity(ofRandom(-0.5,0.5), ofRandom(-0.5,0.5));
-        p->attractionPoint = ofVec2f(RES_W/2,RES_H/2);
+        p->attractionPoint = ofVec2f(RES_W/8 * fours + RES_W/16, RES_H/2);
         colorMesh.addVertex(ofVec3f(fazerColors[cIndx].r,fazerColors[cIndx].g,fazerColors[cIndx].b));
         cIndx = (i%(fazerColors.size()-1)) +1;
         
@@ -415,6 +417,15 @@ void ofApp::update(){
                 int oR = movingSounds[i]->radius;
                 ofSetColor(fazerColors[0]);
                 ofDrawCircle(movingSounds[i]->getPosition(),r+2);
+            }
+        }
+        
+        for(int i = 0; i<animalParticles.size();i++){
+            if(animalParticles[i]->animateRadius){
+                int r = animalParticles[i]->getRadius();
+                int oR = animalParticles[i]->radius;
+                ofSetColor(fazerColors[0]);
+                ofDrawCircle(animalParticles[i]->getPosition(),r+2);
             }
         }
         pointSplineFbo.end();
