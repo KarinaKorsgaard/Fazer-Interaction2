@@ -14,22 +14,22 @@ void ofApp::setup(){
     two.setName("two");
     three.setName("three");
     four.setName("four");
-    aligning.add(useOverlaps.set("use define overlaps", true));
+    //aligning.add(useOverlaps.set("use define overlaps", true));
     one.add(offSet1X.set("offSet1X",0,RES_W,-100));
     one.add(offSet1Y.set("offSet1Y",0,-900,500));
     two.add(offSet2X.set("offSet2X",0,RES_W,-100));
     two.add(offSet2Y.set("offSet2Y",0,-900,500));
-    two.add(overLap1.set("overLap1",0,-700,700));
+    //two.add(overLap1.set("overLap1",0,-700,700));
     three.add(offSet3X.set("offSet3X",0,RES_W,-100));
     three.add(offSet3Y.set("offSet3Y",0,-900,500));
-    three.add(overLap2.set("overLap2",0,-700,700));
+   // three.add(overLap2.set("overLap2",0,-700,700));
     four.add(offSet4X.set("offSet4X",0,RES_W,-100));
     four.add(offSet4Y.set("offSet4Y",0,-900,500));
-    four.add(overLap3.set("overLap3",0,-700,700));
+  //  four.add(overLap3.set("overLap3",0,-700,700));
     aligning.add(numAttractionP.set("numAttraction",5,1,60));
     
-    aligning.add(blobFilter.set("blobFilter",5,1,100));
-    aligning.add(fc.set("fc",0.2,0,3));
+   // aligning.add(blobFilter.set("blobFilter",5,0,20));
+   // aligning.add(fc.set("fc",0.02,0.01,3));
 
     aligning.add(one);
     aligning.add(two);
@@ -40,7 +40,7 @@ void ofApp::setup(){
     visualControl.add(swarm.set("particles", true));
     visualControl.add(drawAnimals.set("animals", true));
     
-    visualControl.add(sNear.set("sNear",0,1,200));
+    //visualControl.add(sNear.set("sNear",0,1,200));
     visualControl.add(b2dRepulsion.set("b2dRepulsion",0,1,200));
 
     ofParameterGroup colorControl;
@@ -173,8 +173,6 @@ void ofApp::setup(){
     
     vbo.setNormalData(&colorMesh.getVertices()[0], (int)total, GL_STATIC_DRAW);
     
-    
-
 
     soundSender.setup("localhost",3000);
     drawGui = true;
@@ -230,7 +228,8 @@ void ofApp::update(){
                         pt.x= RES_W-(ofMap(msg.getArgAsFloat(i),0,512,0,(RES_W/4)*scale1 ) + ofsetlistX[r]);
                         pt.y= ofMap(msg.getArgAsFloat(i+1),0,512,0,RES_H*scale2) + ofsetlistY[r];
                         
-                        if(pt.x > ofsetlistX[r] - overlaps[r]) blobs[r][pointCloudIndx].addVertex(pt);
+                        //if(pt.x > ofsetlistX[r] - overlaps[r]) blobs[r][pointCloudIndx].addVertex(pt);
+                        blobs[r][pointCloudIndx].addVertex(pt);
                         
                     }
                     if(blobs[r][pointCloudIndx].size()>0){
@@ -249,11 +248,11 @@ void ofApp::update(){
         }
     }
     
-    prevCentroids.clear();
-    for(auto p:people){
-        prevCentroids.push_back(p.centroid);
-        //cout<<prevCentroids.back().x<<endl;
-    }
+//    prevCentroids.clear();
+//    for(auto p:people){
+//        prevCentroids.push_back(p.centroid);
+//        //cout<<prevCentroids.back().x<<endl;
+//    }
     
     people.clear();
     for(int i = 0; i < blobs.size();i++){
@@ -279,51 +278,51 @@ void ofApp::update(){
 
     preoplePresentToggle = preoplePresent;
     // if there are more than 4 blobs, we assume at least one is human
-  //  if(people.size()>4)preoplePresent = true;
-   preoplePresent = false;
+    if(people.size()>3)preoplePresent = true;
+    else preoplePresent = false;
     
-    // if there is less than 4 blobs, check if any moved since last frame
-    if( people.size()>0){
-        
-        vector<bool>didCentroidsMove; // vector for holding if we found a centroid that was close to previous
-        for(int i = 0; i<people.size();i++){
-            int x1 = people[i].centroid.x;
-            int y1 = people[i].centroid.y;
-            
-            bool didPersonMove = true;
-            for(int u = 0; u<prevCentroids.size();u++){
-                int x2 = prevCentroids[u].x;
-                int y2 = prevCentroids[u].y;
-                int dist =1/b2InvSqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2));
-                if(dist<blobFilter){ // if person centroid is close to any of the previous, it did not move
-                    didPersonMove = false;
-                    
-                }
-                
-               // cout <<dist<<endl;
-            }
-            cout << didPersonMove <<endl;
-            didCentroidsMove.push_back(didPersonMove);
-        }
-        bool arePeopleMoving = false;
-        for(int i = 0; i<didCentroidsMove.size();i++){
-            if(didCentroidsMove[i]){ // if anyone moved, someone is present
-                arePeopleMoving = true;
-                
-                //countPeopleLeft = 0;
-                
-            }
-        }
-        preoplePresent = arePeopleMoving;
-    }
-    peeps.setFc(fc);
-    // send soundtrigger!
-    if(preoplePresent)peeps.update(1);
-    else peeps.update(0);
-
-    
-    cout << "biquad "+ofToString(peeps.value())<<endl;
-
+//    // if there is less than 4 blobs, check if any moved since last frame
+//    if( people.size()>0 && !preoplePresent){
+//        
+//        vector<bool>didCentroidsMove; // vector for holding if we found a centroid that was close to previous
+//        for(int i = 0; i<people.size();i++){
+//            int x1 = people[i].centroid.x;
+//            int y1 = people[i].centroid.y;
+//            
+//            bool didPersonMove = true;
+//            for(int u = 0; u<prevCentroids.size();u++){
+//                int x2 = prevCentroids[u].x;
+//                int y2 = prevCentroids[u].y;
+//                int dist =1/b2InvSqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2));
+//                if(dist<blobFilter){ // if person centroid is close to any of the previous, it did not move
+//                    didPersonMove = false;
+//                }
+//                
+//               // cout <<dist<<endl;
+//            }
+//            
+//            didCentroidsMove.push_back(didPersonMove);
+//        }
+//        bool arePeopleMoving = false;
+//        for(int i = 0; i<didCentroidsMove.size();i++){
+//            if(didCentroidsMove[i]){ // if anyone moved, someone is present
+//                arePeopleMoving = true;
+//                
+//                //countPeopleLeft = 0;
+//                
+//            }
+//        }
+//        preoplePresent = arePeopleMoving;
+//    }
+//    cout << preoplePresent <<endl;
+//    peeps.setFc(fc);
+//    // send soundtrigger!
+//    if(preoplePresent)peeps.update(2);
+//    else peeps.update(0);
+//
+//    
+//    cout << "biquad "+ofToString((peeps.value()))<<endl;
+//    int value = int(peeps.value());
     
     if(preoplePresent && !preoplePresentToggle){ // if there were noone and now someone
         ofxOscMessage m;
@@ -392,7 +391,7 @@ void ofApp::update(){
                                 int x2 = people[u].points[p].x;
                                 int y2 = people[u].points[p].y;
                                 int dist =1/b2InvSqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2));
-                                if(dist<sNear){
+                                if(dist<movingSounds[i]->getRadius()*1.5){
                                     found = true;
                                     movingSounds[i]->animateRadius=true;
                                     movingSounds[i]->toggle = true;
@@ -432,7 +431,7 @@ void ofApp::update(){
                                 int x2 = people[u].points[p].x;
                                 int y2 = people[u].points[p].y;
                                 int dist =1/b2InvSqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2));
-                                if(dist<sNear){
+                                if(dist<animalParticles[i]->getRadius()*1.5){
                                     found = true;
                                     animalParticles[i]->animateRadius=true;
                                     animalParticles[i]->toggle = true;
