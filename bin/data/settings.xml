@@ -60,12 +60,12 @@
 	<scale1>1.60204</scale1>
 		<numAttraction>26</numAttraction>
 		<one>
-			<offSet1X>-100</offSet1X>
-			<offSet1Y>-680.758</offSet1Y>
+			<offSet1X>199.943</offSet1X>
+			<offSet1Y>-374.636</offSet1Y>
 		</one>
 		<two>
-			<offSet2X>799.828</offSet2X>
-			<offSet2Y>-658.892</offSet2Y>
+			<offSet2X>1205.63</offSet2X>
+			<offSet2Y>-338.192</offSet2Y>
 			<overLap1>0</overLap1>
 		</two>
 		<three>
@@ -79,8 +79,8 @@
 			<overLap3>0</overLap3>
 		</four>
 	<useInsidePoly>0</useInsidePoly>
-	<scaleX>2.14949</scaleX>
-		<scaleY>2.14949</scaleY>
+	<scaleX>1.59235</scaleX>
+		<scaleY>1.59235</scaleY>
 		<use_define_overlaps>0</use_define_overlaps>
 		<blobFilter>1.42857</blobFilter>
 		<fc>0.02</fc>

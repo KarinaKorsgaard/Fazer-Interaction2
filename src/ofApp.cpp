@@ -71,7 +71,7 @@ void ofApp::setup(){
     }
     peeps.setFc(0.2);
     
-    pointSplineFbo.allocate(RES_W,RES_H+80);
+    pointSplineFbo.allocate(RES_W,RES_H+100);
     pointSplineFbo.begin();
     ofClear(0);
     pointSplineFbo.end();
@@ -278,7 +278,10 @@ void ofApp::update(){
 
     preoplePresentToggle = preoplePresent;
     // if there are more than 4 blobs, we assume at least one is human
-    if(people.size()>3)preoplePresent = true;
+    if(people.size()>BLOB_THRES){
+        countPeopleLeft=0;
+        preoplePresent = true;
+    }
     else preoplePresent = false;
     
 //    // if there is less than 4 blobs, check if any moved since last frame

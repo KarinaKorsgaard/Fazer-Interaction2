@@ -11,7 +11,7 @@
 #define SWARM_NUM 720
 #define NUM_SOUND_PARTICLES 8 //time 3, 7*3 = 21 particles. Goes up to 13-> 13*3=39
 // number of animals are defined by the amount of folders in "data/animals"
-
+#define BLOB_THRES 4
 
 // sizes of particles
 #define PARTICLES_MIN_RADIUS 10
