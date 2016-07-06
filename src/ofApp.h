@@ -10,7 +10,7 @@
 #include "animalPng.h"
 #include "person.h"
 #include "customParticles.h"
-
+#include "ofxBiquadFilter.h"
 
 class ofApp : public ofBaseApp{
 
@@ -44,13 +44,14 @@ class ofApp : public ofBaseApp{
     bool preoplePresent = false;
     bool fuckLife = true;
     bool preoplePresentToggle = true;
+    ofxBiquadFilter1f peeps;
     vector<ofVec2f>prevCentroids;
     
     ofxPanel gui;
     ofParameterGroup parameters;
     ofParameterGroup visualControl;
     ofParameterGroup group;
-    ofParameter<float>offSet1X,offSet2X,offSet3X,offSet4X,b2bBounce,blobFilter;
+    ofParameter<float>offSet1X,offSet2X,offSet3X,offSet4X,b2bBounce,blobFilter,fc;
     ofParameter<float>offSet1Y,offSet2Y,offSet3Y,offSet4Y;
     ofParameter<float>scale1,scale2,scale3,scale4;
     ofParameter<int>smoothe;

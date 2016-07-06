@@ -12,6 +12,8 @@
 		1CD33E884D9E3358252E82A1 /* ofxToggle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 907C5B5E104864A2D3A25745 /* ofxToggle.cpp */; };
 		1F558B76FB3412843DDAA031 /* ofxSyphonClient.mm in Sources */ = {isa = PBXBuildFile; fileRef = 03EA4DA95B5E1B8409FC058E /* ofxSyphonClient.mm */; };
 		2116C1B11D0C545700168092 /* ofxAutoReloadedShader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2116C1AF1D0C545700168092 /* ofxAutoReloadedShader.cpp */; };
+		215FE9631D2D41C400C9ED77 /* ofxBiquadFilter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 215FE95F1D2D41C300C9ED77 /* ofxBiquadFilter.cpp */; };
+		215FE9641D2D41C400C9ED77 /* ofxBiquadFilterInstance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 215FE9611D2D41C300C9ED77 /* ofxBiquadFilterInstance.cpp */; };
 		2193492D1D0F018600257892 /* ofxBox2d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 219348AC1D0F018600257892 /* ofxBox2d.cpp */; };
 		2193492E1D0F018600257892 /* ofxBox2dBaseShape.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 219348AE1D0F018600257892 /* ofxBox2dBaseShape.cpp */; };
 		2193492F1D0F018600257892 /* ofxBox2dCircle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 219348B01D0F018600257892 /* ofxBox2dCircle.cpp */; };
@@ -139,6 +141,10 @@
 		2116C1AF1D0C545700168092 /* ofxAutoReloadedShader.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxAutoReloadedShader.cpp; sourceTree = "<group>"; };
 		2116C1B01D0C545700168092 /* ofxAutoReloadedShader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxAutoReloadedShader.h; sourceTree = "<group>"; };
 		215FE94A1D2A4FE800C9ED77 /* person.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = person.h; sourceTree = "<group>"; };
+		215FE95F1D2D41C300C9ED77 /* ofxBiquadFilter.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxBiquadFilter.cpp; sourceTree = "<group>"; };
+		215FE9601D2D41C300C9ED77 /* ofxBiquadFilter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxBiquadFilter.h; sourceTree = "<group>"; };
+		215FE9611D2D41C300C9ED77 /* ofxBiquadFilterInstance.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxBiquadFilterInstance.cpp; sourceTree = "<group>"; };
+		215FE9621D2D41C300C9ED77 /* ofxBiquadFilterInstance.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxBiquadFilterInstance.h; sourceTree = "<group>"; };
 		219348AC1D0F018600257892 /* ofxBox2d.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxBox2d.cpp; sourceTree = "<group>"; };
 		219348AD1D0F018600257892 /* ofxBox2d.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxBox2d.h; sourceTree = "<group>"; };
 		219348AE1D0F018600257892 /* ofxBox2dBaseShape.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxBox2dBaseShape.cpp; sourceTree = "<group>"; };
@@ -353,6 +359,26 @@
 			);
 			name = src;
 			path = ../../../addons/ofxAutoReloadedShader/src;
+			sourceTree = "<group>";
+		};
+		215FE95D1D2D41C300C9ED77 /* ofxBiquadFilter */ = {
+			isa = PBXGroup;
+			children = (
+				215FE95E1D2D41C300C9ED77 /* src */,
+			);
+			name = ofxBiquadFilter;
+			sourceTree = "<group>";
+		};
+		215FE95E1D2D41C300C9ED77 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				215FE95F1D2D41C300C9ED77 /* ofxBiquadFilter.cpp */,
+				215FE9601D2D41C300C9ED77 /* ofxBiquadFilter.h */,
+				215FE9611D2D41C300C9ED77 /* ofxBiquadFilterInstance.cpp */,
+				215FE9621D2D41C300C9ED77 /* ofxBiquadFilterInstance.h */,
+			);
+			name = src;
+			path = ../../../addons/ofxBiquadFilter/src;
 			sourceTree = "<group>";
 		};
 		219348AA1D0F018600257892 /* ofxBox2d */ = {
@@ -740,6 +766,7 @@
 				7F3C04577424427D348B1425 /* ofxSyphon */,
 				2116C1AD1D0C545700168092 /* ofxAutoReloadedShader */,
 				219348AA1D0F018600257892 /* ofxBox2d */,
+				215FE95D1D2D41C300C9ED77 /* ofxBiquadFilter */,
 			);
 			name = addons;
 			sourceTree = "<group>";
@@ -999,6 +1026,7 @@
 				8F5205AEF8861EF234F0651A /* ofxOscSender.cpp in Sources */,
 				ADE367465D2A8EBAD4C7A8D9 /* IpEndpointName.cpp in Sources */,
 				2193494E1D0F018600257892 /* b2ChainAndPolygonContact.cpp in Sources */,
+				215FE9641D2D41C400C9ED77 /* ofxBiquadFilterInstance.cpp in Sources */,
 				67FE4C7B15C2F0478C8126C2 /* NetworkingUtils.cpp in Sources */,
 				219349471D0F018600257892 /* b2Body.cpp in Sources */,
 				510CAFE035E576A4E1502D52 /* UdpSocket.cpp in Sources */,
@@ -1020,6 +1048,7 @@
 				219349601D0F018600257892 /* b2WeldJoint.cpp in Sources */,
 				2193495E1D0F018600257892 /* b2RevoluteJoint.cpp in Sources */,
 				11DF9AB1B4EAA63E3B190CA0 /* ofxSyphonServerDirectory.mm in Sources */,
+				215FE9631D2D41C400C9ED77 /* ofxBiquadFilter.cpp in Sources */,
 				219349361D0F018600257892 /* b2CollideCircle.cpp in Sources */,
 				C9109422648B170B07A778CF /* SyphonNameboundClient.m in Sources */,
 				2193494C1D0F018600257892 /* b2WorldCallbacks.cpp in Sources */,

@@ -29,6 +29,7 @@ void ofApp::setup(){
     aligning.add(numAttractionP.set("numAttraction",5,1,60));
     
     aligning.add(blobFilter.set("blobFilter",5,1,100));
+    aligning.add(fc.set("fc",0.2,0,3));
 
     aligning.add(one);
     aligning.add(two);
@@ -68,7 +69,7 @@ void ofApp::setup(){
     for(int i = 0; i< blobs.size();i++){
         blobs[i].resize(15);
     }
-
+    peeps.setFc(0.2);
     
     pointSplineFbo.allocate(RES_W,RES_H+80);
     pointSplineFbo.begin();
@@ -315,19 +316,14 @@ void ofApp::update(){
         }
         preoplePresent = arePeopleMoving;
     }
-    
+    peeps.setFc(fc);
     // send soundtrigger!
-    if(preoplePresent)countPeopleArrived++;
-    else countPeopleLeft++;
+    if(preoplePresent)peeps.update(1);
+    else peeps.update(0);
 
-    if(countPeopleArrived > 20){
-        countPeopleLeft = 0;
-    }
-    if(countPeopleLeft > 20){
-        countPeopleArrived = 0;
-    }
-    cout << "arrived "+ofToString(countPeopleArrived)<<endl;
-    cout << "left "+ofToString(countPeopleLeft)<<endl;
+    
+    cout << "biquad "+ofToString(peeps.value())<<endl;
+
     
     if(preoplePresent && !preoplePresentToggle){ // if there were noone and now someone
         ofxOscMessage m;
