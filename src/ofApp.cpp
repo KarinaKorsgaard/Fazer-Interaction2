@@ -14,7 +14,7 @@ void ofApp::setup(){
     two.setName("two");
     three.setName("three");
     four.setName("four");
-    
+    aligning.add(useOverlaps.set("use define overlaps", true));
     one.add(offSet1X.set("offSet1X",0,RES_W,-100));
     one.add(offSet1Y.set("offSet1Y",0,-900,500));
     two.add(offSet2X.set("offSet2X",0,RES_W,-100));
@@ -246,27 +246,84 @@ void ofApp::update(){
         }
     }
     
-
+    prevCentroids.clear();
+    for(auto p:people)prevCentroids.push_back(p.centroid);
+    
     people.clear();
     for(int i = 0; i < blobs.size();i++){
         for(int u = 0; u< blobs[i].size();u++){
-           
-            Person karina = *new Person;
-            ofPolyline p=blobs[i][u];
-            vector<ofPoint>points;
+           ofPolyline p=blobs[i][u];
             if(p.size()>0){
+                Person karina = *new Person;
+            
+                vector<ofPoint>points;
+            
                 points.push_back(p.getCentroid2D());
                 for( int pt = 0; pt < p.getVertices().size(); pt++) {
                     points.push_back(p.getVertices().at(pt));
                 }
+                karina.centroid = points[0];
+                karina.poly = p;
+                karina.points = points;
+                people.push_back(karina);
             }
-            karina.centroid = blobs[i][u].getCentroid2D();
-            karina.poly = p;
-            karina.points = points;
-            people.push_back(karina);
+
         }
     }
+    preoplePresentToggle = preoplePresent;
+    // if there are more than 4 blobs, we assume at least one is human
+    if(people.size()>4)preoplePresent = true;
+    else preoplePresent=false;
+    
+    // if there is less than 4 blobs, check if any moved since last frame
+    if(!preoplePresent){
+        
+        vector<bool>didCentroidsMove; // vector for holding if we found a centroid that was close to previous
+        for(int i = 0; i<people.size();i++){
+            int x1 = people[i].centroid.x;
+            int y1 = people[i].centroid.y;
+            
+            bool didPersonMove = true;
+            for(int u = 0; u<prevCentroids.size();u++){
+                int x2 = prevCentroids[u].x;
+                int y2 = prevCentroids[u].y;
+                int dist =1/b2InvSqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2));
+                if(dist<10){ // if person centroid is close to any of the previous, it did not move
+                    bool didPersonMove = false;
+                    
+                }
+            }
+            didCentroidsMove.push_back(didPersonMove);
+        }
+        bool arePeopleMoving = false;
+        for(int i = 0; i<didCentroidsMove.size();i++){
+            if(didCentroidsMove[i]){ // if anyone moved, someone is present
+                arePeopleMoving = true;
+                countPeopleLeft = 0;
+            }
+        }
+        preoplePresent = arePeopleMoving;
+    }
+    // send soundtrigger!
+    
 
+    if(preoplePresent && !preoplePresentToggle){ // if there were noone and now someone
+        ofxOscMessage m;
+        m.setAddress("/peoplePresent");
+        m.addInt32Arg(1);
+        soundSender.sendMessage(m);
+        fuckLife = true;
+    }
+
+    if(!preoplePresent)countPeopleLeft++;
+    if(countPeopleLeft>400 && fuckLife){
+        fuckLife = false;
+        ofxOscMessage m;
+        m.setAddress("/peoplePresent");
+        m.addInt32Arg(0);
+        soundSender.sendMessage(m);
+    }
+    
     
     if(drawAnimals){
         for(int i = 0 ; i< animals.size();i++){

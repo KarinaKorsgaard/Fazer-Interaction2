@@ -35,9 +35,14 @@ class ofApp : public ofBaseApp{
     
     vector<AnimalPng>animals;
 
+    int countPeopleLeft=0;
     bool		drawGui;
     bool bDebug = false;
-    bool useOverlaps=true;
+    ofParameter<bool> useOverlaps;
+    bool preoplePresent = false;
+    bool fuckLife = true;
+    bool preoplePresentToggle = true;
+    vector<ofVec2f>prevCentroids;
     
     ofxPanel gui;
     ofParameterGroup parameters;
