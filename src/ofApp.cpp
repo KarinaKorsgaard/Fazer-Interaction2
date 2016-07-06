@@ -16,16 +16,16 @@ void ofApp::setup(){
     four.setName("four");
     
     one.add(offSet1X.set("offSet1X",0,RES_W,-100));
-    one.add(offSet1Y.set("offSet1Y",0,-500,500));
+    one.add(offSet1Y.set("offSet1Y",0,-900,500));
     two.add(offSet2X.set("offSet2X",0,RES_W,-100));
     two.add(offSet2Y.set("offSet2Y",0,-900,500));
-   // two.add(overLap1.set("overLap1",0,-700,700));
+    two.add(overLap1.set("overLap1",0,-700,700));
     three.add(offSet3X.set("offSet3X",0,RES_W,-100));
     three.add(offSet3Y.set("offSet3Y",0,-900,500));
-  //  three.add(overLap2.set("overLap2",0,-700,700));
+    three.add(overLap2.set("overLap2",0,-700,700));
     four.add(offSet4X.set("offSet4X",0,RES_W,-100));
     four.add(offSet4Y.set("offSet4Y",0,-900,500));
-   // four.add(overLap3.set("overLap3",0,-700,700));
+    four.add(overLap3.set("overLap3",0,-700,700));
     aligning.add(numAttractionP.set("numAttraction",5,1,60));
 
     aligning.add(one);
@@ -34,14 +34,14 @@ void ofApp::setup(){
     aligning.add(four);
     
     visualControl.setName("visuals");
-    visualControl.add(swarm.set("swarm", true));
-    visualControl.add(drawAnimals.set("drawAnimals", true));
+    visualControl.add(swarm.set("particles", true));
+    visualControl.add(drawAnimals.set("animals", true));
     
     visualControl.add(sNear.set("sNear",0,1,200));
     visualControl.add(b2dRepulsion.set("b2dRepulsion",0,1,200));
 
     ofParameterGroup colorControl;
-    colorControl.add(clusterRange1.set("background",ofColor(255,255), ofColor(0,0),ofColor(255)));
+    colorControl.add(background.set("background",ofColor(255,255), ofColor(0,0),ofColor(255)));
 
     
     group.add(aligning);
@@ -101,16 +101,16 @@ void ofApp::setup(){
     
     for(int i = 0; i<dir.size();i++){
         AnimalPng ani = *new AnimalPng;
-        ani.setup(dir.getPath(i),ofVec2f(200,200));
+        ani.setup(dir.getPath(i),ofVec2f(ofRandom(RES_W),ofRandom(RES_H)));
         animals.push_back(ani);
         
-        cout<<dir.getPath(i);
+        cout<<dir.getPath(i)<<endl;
     }
     
     //ofSetCircleResolution(100);
     box2d.init();
     box2d.setGravity(0, 0);
-    box2d.createGround(0, RES_H, RES_W, RES_H);
+    box2d.createGround(0, RES_H, RES_W, RES_H-20);
     box2d.setFPS(30.0);
     box2d.registerGrabbing();
     
@@ -119,35 +119,34 @@ void ofApp::setup(){
     int cIndx = 1;
     int fours = 0;
     
-    for(unsigned int i = 0; i < num; i++){
-        fours = (i*4) / num;
+
+
+    for(unsigned int i = 0; i < SWARM_NUM; i++){
         customParticles.push_back(shared_ptr<CustomParticle>(new CustomParticle));
         CustomParticle * p = customParticles.back().get();
-        float r = ofRandom(8, 45);
-        r = ofRandom(8,r);
+        float r = ofRandom(PARTICLES_MIN_RADIUS, PARTICLES_MAX_RADIUS);
+        r = ofRandom(PARTICLES_MIN_RADIUS,r);
         //float density, float bounce, float friction
-        p->setPhysics(ofRandom(0.1,5), ofRandom(0.1,0.5) ,0);
-        p->setup(box2d.getWorld(), ofRandom((fours-1)*RES_W/4,fours*RES_W/4), ofRandom(100,RES_H-100), r);
+        p->setPhysics(ofRandom(0.1,5), ofRandom(0.1,0.5) ,0.1);
+        p->setup(box2d.getWorld(), ofRandom(RES_W), ofRandom(100,RES_H-100), r);
         p->radius=p->getRadius();
         p->setVelocity(ofRandom(-0.5,0.5), ofRandom(-0.5,0.5));
-        p->attractionPoint = ofVec2f(fours*RES_W/4 +RES_W/8, RES_H/2);
-        p->num =fours;
+        p->attractionPoint = ofVec2f(RES_W/2,RES_H/2);
         colorMesh.addVertex(ofVec3f(fazerColors[cIndx].r,fazerColors[cIndx].g,fazerColors[cIndx].b));
         cIndx = (i%(fazerColors.size()-1)) +1;
         
     }
-
-    for(int i = 0; i<7;i++){
+    
+    for(int i = 0; i<NUM_SOUND_PARTICLES;i++){
         for(int u = 0; u<3;u++){
             movingSounds.push_back(shared_ptr<MovingSoundParticle>(new MovingSoundParticle));
             MovingSoundParticle * p = movingSounds.back().get();
-            float r = ofRandom(30,55);		// a random radius 4px - 20px
+            float r = ofRandom(SOUND_PARTICLES_MIN_RADIUS,SOUND_PARTICLES_MAX_RADIUS);		// a random radius 4px - 20px
             p->setPhysics(ofRandom(0.1,5), ofRandom(0.1,0.5) ,0);
-            p->setup(box2d.getWorld(), ofRandom(RES_W), ofRandom(RES_H), r);
+            p->setup(box2d.getWorld(), ofRandom(RES_W), ofRandom(RES_H-50), r);
             p->radius=p->getRadius();
             p->setVelocity(ofRandom(-0.5,0.5), ofRandom(-0.5,0.5));
             p->attractionPoint = ofVec2f(RES_W/2,RES_H/2);
-            p->num = 0;
             p->name = "/"+ofToString(i)+"/"+ofToString(u);
             colorMesh.addVertex(ofVec3f(fazerColors[0].r,fazerColors[0].g,fazerColors[0].b));
         }
@@ -155,18 +154,17 @@ void ofApp::setup(){
     for(int u = 0; u<animals.size();u++){
         animalParticles.push_back(shared_ptr<AnimalParticle>(new AnimalParticle));
         AnimalParticle * p = animalParticles.back().get();
-        float r = ofRandom(55,75);		// a random radius 4px - 20px
-        p->setPhysics(ofRandom(0.1,5), ofRandom(0.1,0.5) ,0);
-        p->setup(box2d.getWorld(), ofRandom(RES_W), ofRandom(RES_H), r);
+        float r = ofRandom(ANIMAL_PARTICLES_MIN_RADIUS,ANIMAL_PARTICLES_MAX_RADIUS);		// a random radius 4px - 20px
+        p->setPhysics(5, ofRandom(0.1,0.5) ,0);
+        p->setup(box2d.getWorld(), ofRandom(RES_W), ofRandom(RES_H-50), r);
         p->radius=p->getRadius();
         p->setVelocity(ofRandom(-0.5,0.5), ofRandom(-0.5,0.5));
         p->attractionPoint = ofVec2f(RES_W/2,RES_H/2);
-        p->num = 0;
         p->name = "/animals/"+ofToString(u);
         colorMesh.addVertex(ofVec3f(fazerColors[0].r,fazerColors[0].g,fazerColors[0].b));
     }
     
-    total = SWARM_NUM+movingSounds.size()+animalParticles.size();
+    total = customParticles.size()+movingSounds.size()+animalParticles.size();
     
     vbo.setNormalData(&colorMesh.getVertices()[0], (int)total, GL_STATIC_DRAW);
     
@@ -175,7 +173,7 @@ void ofApp::setup(){
 
     soundSender.setup("localhost",3000);
     drawGui = true;
-    bDebug = true;
+    bDebug = false;
 
     rCounters.resize(4);
     syphon.setName("FazerParticles");
@@ -192,6 +190,10 @@ void ofApp::update(){
     
     vector<float>ofsetlistY;
     ofsetlistY={offSet1Y,offSet2Y,offSet3Y,offSet4Y};
+    
+    vector<int>overlaps;
+    if(useOverlaps)overlaps={0,overLap1,overLap2,overLap3};
+    else overlaps={0,0,0,0};
     
     for(int r = 0; r<receivers.size();r++){
         for(int i = 0; i<rCounters.size();i++)rCounters[i]++;
@@ -221,13 +223,15 @@ void ofApp::update(){
                         
                         ofVec2f pt;
                         pt.x= RES_W-(ofMap(msg.getArgAsFloat(i),0,512,0,(RES_W/4)*scale1 ) + ofsetlistX[r]);
-                        pt.y= ofMap(msg.getArgAsFloat(i+1),0,512,0,RES_H*scale2) + ofsetlistY[r];;
-                        blobs[r][pointCloudIndx].addVertex(pt);
+                        pt.y= ofMap(msg.getArgAsFloat(i+1),0,512,0,RES_H*scale2) + ofsetlistY[r];
+                        
+                        if(pt.x > ofsetlistX[r] - overlaps[r]) blobs[r][pointCloudIndx].addVertex(pt);
                         
                     }
-                    if(blobs[r][pointCloudIndx].size()>0) blobs[r][pointCloudIndx].addVertex(blobs[r][pointCloudIndx].getVertices()[0]);
-                    blobs[r][pointCloudIndx]=blobs[r][pointCloudIndx].getResampledBySpacing(numAttractionP);
-
+                    if(blobs[r][pointCloudIndx].size()>0){
+                        blobs[r][pointCloudIndx].close();
+                        blobs[r][pointCloudIndx]=blobs[r][pointCloudIndx].getResampledBySpacing(numAttractionP);
+                    }
                 }
             }
         }
@@ -244,6 +248,7 @@ void ofApp::update(){
     people.clear();
     for(int i = 0; i < blobs.size();i++){
         for(int u = 0; u< blobs[i].size();u++){
+           
             Person karina = *new Person;
             ofPolyline p=blobs[i][u];
             vector<ofPoint>points;
@@ -268,7 +273,6 @@ void ofApp::update(){
     }
     
     if(swarm){
-        
         mesh.clear();
         for(int i = 0; i<customParticles.size();i++){
             
@@ -380,10 +384,11 @@ void ofApp::update(){
     }
 
 
-    if(swarm||drawAnimals){
+    if(swarm){
         pointSplineFbo.begin();
         ofClear(0, 0);
         ofEnableAlphaBlending();
+        ofBackground(background);
         
         pointSpline.begin();
         ofSetColor(255);
@@ -394,7 +399,7 @@ void ofApp::update(){
         if(swarm){
             
             solid.bind();
-            vbo.draw(GL_POINTS, 0, int(total));
+            vbo.draw(GL_POINTS, 0, int(vbo.getNumVertices()));
             solid.unbind();
   
         }
@@ -430,7 +435,7 @@ void ofApp::update(){
     if(drawAnimals){
         int itr = 0;
         for(int i = 0; i<animalParticles.size();i++){
-            animals[itr].draw(animalParticles[i]->getPosition(),animalParticles[i]->getRadius());
+            animals[itr].draw(animalParticles[i]->getPosition(),animalParticles[i]->getRadius(), animalParticles[i]->getRotation());
             itr ++;
             itr=itr%animals.size();
         }
@@ -459,8 +464,6 @@ void ofApp::update(){
         ofNoFill();
         ofSetColor(ofColor::green);
         ofDrawLine(RES_W-k1,0,RES_W-k1,RES_H);
-
-   
         
         k1 = offSet4X + ((RES_W/4)*scale1 /2);
         k2 = offSet4X;

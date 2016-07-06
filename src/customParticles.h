@@ -8,6 +8,7 @@
 
 #ifndef customParticles_h
 #define customParticles_h
+#include "defines.h"
 
 class CustomParticle : public ofxBox2dCircle {
     
@@ -26,15 +27,15 @@ public:
         ofVec2f p= getPosition();
         //  addAttractionPoint(RES_W/2,RES_H/2,2);
         if(p.x>RES_W-radius){//(num+1)*(RES_W/4)){
-            addAttractionPoint(attractionPoint,2);
+            addAttractionPoint(attractionPoint,CENTER_ATTRACTION);
             
         }
         if(p.y<radius*2){
-            addAttractionPoint(attractionPoint,2);
+            addAttractionPoint(attractionPoint,CENTER_ATTRACTION);
         }
         
         if(p.x<radius){//num*(RES_W/4)){
-            addAttractionPoint(attractionPoint,2);
+            addAttractionPoint(attractionPoint,CENTER_ATTRACTION);
         }
         
         //   if(ofRandom(1)<0.001)addRepulsionForce(attractionPoint,0.1);
@@ -69,10 +70,10 @@ public:
     void update(){
         if(animateRadius){
             curTime++;
-            float curRadius = inOut(curTime,radius,radius/2,4);
+            float curRadius = inOut(curTime,radius,radius/2,SOUND_ANIMATION);
             //cout<<curRadius<<endl;
             setRadius(curRadius);
-            if(curTime>8){
+            if(curTime>SOUND_ANIMATION*2){
                 curTime=0;
                 animateRadius=false;
                 setPosition(ofRandom(RES_W), -radius);
@@ -83,16 +84,16 @@ public:
         ofVec2f vel= getVelocity();
         ofVec2f p= getPosition();
         if(p.x>RES_W-radius){//(num+1)*(RES_W/4)){
-            addAttractionPoint(attractionPoint,2);
+            addAttractionPoint(attractionPoint,CENTER_ATTRACTION);
         }
         if(p.y<radius*2){
-            addAttractionPoint(attractionPoint,2);
+            addAttractionPoint(attractionPoint,CENTER_ATTRACTION);
         }
         if(p.x<radius){//num*(RES_W/4)){
-            addAttractionPoint(attractionPoint,2);
+            addAttractionPoint(attractionPoint,CENTER_ATTRACTION);
         }
-        if(vel.length()<1)setVelocity(vel*1.2);
-        if(vel.length()>4)setVelocity(vel*0.8);
+        if(vel.length()<MIN_VEL)setVelocity(vel*1.2);
+        if(vel.length()>MAX_VEL)setVelocity(vel*0.8);
         
     }
     
@@ -124,10 +125,10 @@ public:
     void update(){
         if(animateRadius){
             curTime++;
-            float curRadius = inOut(curTime,radius,radius/2,4);
+            float curRadius = inOut(curTime,radius,radius/2,ANIMAL_ANIMATION);
             //cout<<curRadius<<endl;
             setRadius(curRadius);
-            if(curTime>8){
+            if(curTime>ANIMAL_ANIMATION*2){
                 curTime=0;
                 animateRadius=false;
                 setPosition(ofRandom(RES_W), -radius);
@@ -135,7 +136,7 @@ public:
             }
         }
         
-        if(hide && ofRandom(1000)<1){
+        if(hide && ofRandom(ANIMAL_CHANCE)<1){
             hide = false;
             setPosition(ofRandom(RES_W), -radius);
             setRadius(radius);
@@ -145,16 +146,16 @@ public:
             ofVec2f vel= getVelocity();
             ofVec2f p= getPosition();
             if(p.x>RES_W-radius){//(num+1)*(RES_W/4)){
-                addAttractionPoint(attractionPoint,2);
+                addAttractionPoint(attractionPoint,CENTER_ATTRACTION);
             }
             if(p.y<radius*2){
-                addAttractionPoint(attractionPoint,2);
+                addAttractionPoint(attractionPoint,CENTER_ATTRACTION);
             }
             if(p.x<radius){//num*(RES_W/4)){
-                addAttractionPoint(attractionPoint,2);
+                addAttractionPoint(attractionPoint,CENTER_ATTRACTION);
             }
-            if(vel.length()<1)setVelocity(vel*1.2);
-            if(vel.length()>4)setVelocity(vel*0.8);
+            if(vel.length()<MIN_VEL)setVelocity(vel*1.2);
+            if(vel.length()>MAX_VEL)setVelocity(vel*0.8);
         }
         
     }

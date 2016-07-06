@@ -11,7 +11,7 @@
 #ifndef animalPng_h
 #define animalPng_h
 
-
+#include "defines.h"
 class AnimalPng{
     
 public:
@@ -40,7 +40,7 @@ public:
             }
             
         }
-        else ofLog(OF_LOG_WARNING) << "Could not find folder";
+        else ofLog(OF_LOG_WARNING) << "Could not find folder +"+ _path;
         
         // this toggle will tell the sequence
         // be be indepent of the app fps
@@ -49,7 +49,7 @@ public:
         // this will set the speed to play
         // the animation back we set the
         // default to 24fps
-        sequenceFPS = 24;
+        sequenceFPS = ANIMAL_FPS;
         
 
 
@@ -59,25 +59,16 @@ public:
 
     }
     
-    void draw(ofVec2f _pos, int r){
+    void draw(ofVec2f _pos, int r, float _rot){
         
-        if((int)images.size() <= 0) {
-            ofSetColor(255);
-            ofDrawBitmapString("No Images...", 150, ofGetHeight()/2);
-            return;
-        }
-        
-        // this is the total time of the animation based on fps
-        //float totalTime = images.size() / sequenceFPS;
         
         uint64_t frameIndex = 0;
         
         if(bFrameIndependent) {
-            // calculate the frame index based on the app time
-            // and the desired sequence fps. then mod to wrap
             frameIndex = (int)(ofGetElapsedTimef() * sequenceFPS) % images.size();
         }
         float s = r*1.5;
+        //rotate? 
         images[frameIndex].draw(_pos.x-s/2,_pos.y-s/2, s, s);
     }
     
