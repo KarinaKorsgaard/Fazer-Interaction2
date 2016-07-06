@@ -17,6 +17,7 @@ public:
     int area;
     int idNum;
     int age;
+    bool moving;
     
     void draw(){
         for(int i = 0; i<points.size();i++)ofDrawCircle(points[i],4);

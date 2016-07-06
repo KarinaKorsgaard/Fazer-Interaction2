@@ -27,6 +27,8 @@ void ofApp::setup(){
     four.add(offSet4Y.set("offSet4Y",0,-900,500));
     four.add(overLap3.set("overLap3",0,-700,700));
     aligning.add(numAttractionP.set("numAttraction",5,1,60));
+    
+    aligning.add(blobFilter.set("blobFilter",5,1,100));
 
     aligning.add(one);
     aligning.add(two);
@@ -247,7 +249,10 @@ void ofApp::update(){
     }
     
     prevCentroids.clear();
-    for(auto p:people)prevCentroids.push_back(p.centroid);
+    for(auto p:people){
+        prevCentroids.push_back(p.centroid);
+        //cout<<prevCentroids.back().x<<endl;
+    }
     
     people.clear();
     for(int i = 0; i < blobs.size();i++){
@@ -270,13 +275,14 @@ void ofApp::update(){
 
         }
     }
+
     preoplePresentToggle = preoplePresent;
     // if there are more than 4 blobs, we assume at least one is human
-    if(people.size()>4)preoplePresent = true;
-    else preoplePresent=false;
+  //  if(people.size()>4)preoplePresent = true;
+   preoplePresent = false;
     
     // if there is less than 4 blobs, check if any moved since last frame
-    if(!preoplePresent){
+    if( people.size()>0){
         
         vector<bool>didCentroidsMove; // vector for holding if we found a centroid that was close to previous
         for(int i = 0; i<people.size();i++){
@@ -288,25 +294,41 @@ void ofApp::update(){
                 int x2 = prevCentroids[u].x;
                 int y2 = prevCentroids[u].y;
                 int dist =1/b2InvSqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2));
-                if(dist<10){ // if person centroid is close to any of the previous, it did not move
-                    bool didPersonMove = false;
+                if(dist<blobFilter){ // if person centroid is close to any of the previous, it did not move
+                    didPersonMove = false;
                     
                 }
+                
+               // cout <<dist<<endl;
             }
+            cout << didPersonMove <<endl;
             didCentroidsMove.push_back(didPersonMove);
         }
         bool arePeopleMoving = false;
         for(int i = 0; i<didCentroidsMove.size();i++){
             if(didCentroidsMove[i]){ // if anyone moved, someone is present
                 arePeopleMoving = true;
-                countPeopleLeft = 0;
+                
+                //countPeopleLeft = 0;
+                
             }
         }
         preoplePresent = arePeopleMoving;
     }
-    // send soundtrigger!
     
+    // send soundtrigger!
+    if(preoplePresent)countPeopleArrived++;
+    else countPeopleLeft++;
 
+    if(countPeopleArrived > 20){
+        countPeopleLeft = 0;
+    }
+    if(countPeopleLeft > 20){
+        countPeopleArrived = 0;
+    }
+    cout << "arrived "+ofToString(countPeopleArrived)<<endl;
+    cout << "left "+ofToString(countPeopleLeft)<<endl;
+    
     if(preoplePresent && !preoplePresentToggle){ // if there were noone and now someone
         ofxOscMessage m;
         m.setAddress("/peoplePresent");

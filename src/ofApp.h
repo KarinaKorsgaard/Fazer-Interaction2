@@ -11,6 +11,7 @@
 #include "person.h"
 #include "customParticles.h"
 
+
 class ofApp : public ofBaseApp{
 
 	public:
@@ -36,6 +37,7 @@ class ofApp : public ofBaseApp{
     vector<AnimalPng>animals;
 
     int countPeopleLeft=0;
+    int countPeopleArrived=0;
     bool		drawGui;
     bool bDebug = false;
     ofParameter<bool> useOverlaps;
@@ -48,7 +50,7 @@ class ofApp : public ofBaseApp{
     ofParameterGroup parameters;
     ofParameterGroup visualControl;
     ofParameterGroup group;
-    ofParameter<float>offSet1X,offSet2X,offSet3X,offSet4X,b2bBounce;
+    ofParameter<float>offSet1X,offSet2X,offSet3X,offSet4X,b2bBounce,blobFilter;
     ofParameter<float>offSet1Y,offSet2Y,offSet3Y,offSet4Y;
     ofParameter<float>scale1,scale2,scale3,scale4;
     ofParameter<int>smoothe;
